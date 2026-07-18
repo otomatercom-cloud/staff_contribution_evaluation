@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ===================== Contribution Line: List (generic) ===================== -->
+        <record id="view_staff_contribution_line_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Contributions" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1"/>
+                    <field name="contribution_type_ids" widget="many2many_tags"/>
+                    <field name="name"/>
+                    <field name="revenue_generated" optional="hide"/>
+                    <field name="cost_saved" optional="hide"/>
+                    <field name="business_impact" optional="hide"/>
+                    <field name="self_rating" optional="show"/>
+                    <field name="manager_rating" optional="show"/>
+                    <field name="evidence_count" string="Evidence" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Section specific list views (reuse the generic list, filtered by domain on the o2m) -->
+        <record id="view_staff_contribution_line_revenue_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.revenue.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Revenue Contributions" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1" force_save="1"/>
+                    <field name="contribution_type_ids" widget="many2many_tags"/>
+                    <field name="name" string="Activity Description"/>
+                    <field name="revenue_generated"/>
+                    <field name="estimated_business_impact"/>
+                    <field name="self_rating"/>
+                    <field name="manager_rating"/>
+                    <field name="evidence_count" string="Evidence"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_staff_contribution_line_cost_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.cost.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Cost Reductions" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1" force_save="1"/>
+                    <field name="contribution_type_ids" widget="many2many_tags"/>
+                    <field name="name" string="Contribution"/>
+                    <field name="cost_saved" string="Estimated Annual Saving"/>
+                    <field name="self_rating"/>
+                    <field name="manager_rating"/>
+                    <field name="evidence_count" string="Evidence"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_staff_contribution_line_marketing_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.marketing.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Digital &amp; Marketing" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1" force_save="1"/>
+                    <field name="contribution_type_ids" widget="many2many_tags"/>
+                    <field name="name"/>
+                    <field name="reach"/>
+                    <field name="views"/>
+                    <field name="leads_generated"/>
+                    <field name="admissions_influenced"/>
+                    <field name="self_rating"/>
+                    <field name="manager_rating"/>
+                    <field name="evidence_count" string="Evidence"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_staff_contribution_line_placement_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.placement.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Placement" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1" force_save="1"/>
+                    <field name="name"/>
+                    <field name="students_placed"/>
+                    <field name="recruiters_added"/>
+                    <field name="placement_drives"/>
+                    <field name="highest_salary"/>
+                    <field name="average_salary"/>
+                    <field name="self_rating"/>
+                    <field name="manager_rating"/>
+                    <field name="evidence_count" string="Evidence"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_staff_contribution_line_crossdept_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.crossdept.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Cross Department" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1" force_save="1"/>
+                    <field name="name" string="Contribution"/>
+                    <field name="department_ids" widget="many2many_tags"/>
+                    <field name="business_impact"/>
+                    <field name="manager_rating"/>
+                    <field name="evidence_count" string="Evidence"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_staff_contribution_line_manager_only_list" model="ir.ui.view">
+            <field name="name">staff.contribution.line.manager_only.list</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <list string="Contributions" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="section" column_invisible="1" force_save="1"/>
+                    <field name="contribution_type_ids" widget="many2many_tags" optional="show"/>
+                    <field name="name"/>
+                    <field name="business_impact" optional="show"/>
+                    <field name="manager_rating"/>
+                    <field name="evidence_count" string="Evidence"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ===================== Contribution Line: Form ===================== -->
+        <record id="view_staff_contribution_line_form" model="ir.ui.view">
+            <field name="name">staff.contribution.line.form</field>
+            <field name="model">staff.contribution.line</field>
+            <field name="arch" type="xml">
+                <form string="Contribution">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="evaluation_id" invisible="context.get('default_evaluation_id')" readonly="context.get('default_evaluation_id')"/>
+                                <field name="section"/>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="self_rating" invisible="not has_self_rating"/>
+                                <field name="manager_rating"/>
+                                <field name="has_self_rating" invisible="1"/>
+                            </group>
+                        </group>
+                        <group string="Tick Applicable Contribution">
+                            <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                        </group>
+                        <group string="Details">
+                            <field name="description" nolabel="1" colspan="2" placeholder="Activity description / contribution details..."/>
+                        </group>
+                        <group string="Impact &amp; KPIs">
+                            <group>
+                                <field name="revenue_generated"/>
+                                <field name="revenue_protected"/>
+                                <field name="estimated_business_impact"/>
+                                <field name="estimated_business_potential"/>
+                                <field name="cost_saved"/>
+                                <field name="time_saved"/>
+                                <field name="efficiency_improvement"/>
+                            </group>
+                            <group>
+                                <field name="reach"/>
+                                <field name="views"/>
+                                <field name="leads_generated"/>
+                                <field name="admissions_influenced"/>
+                                <field name="students_placed"/>
+                                <field name="recruiters_added"/>
+                                <field name="placement_drives"/>
+                                <field name="highest_salary"/>
+                                <field name="average_salary"/>
+                            </group>
+                            <group>
+                                <field name="students_retained"/>
+                                <field name="parents_convinced"/>
+                                <field name="repeat_enrolments"/>
+                                <field name="alumni_engagements"/>
+                                <field name="activity_count"/>
+                                <field name="department_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        <group string="Narrative" invisible="section not in ('g', 'r', 'm', 'o')">
+                            <field name="problem_identified"/>
+                            <field name="action_taken"/>
+                            <field name="result_achieved"/>
+                            <field name="issue_prevented"/>
+                            <field name="current_status"/>
+                            <field name="measurable_result"/>
+                            <field name="business_impact"/>
+                        </group>
+                        <notebook>
+                            <page string="Evidence">
+                                <field name="evidence_ids">
+                                    <list editable="bottom">
+                                        <field name="evidence_type_id"/>
+                                        <field name="name"/>
+                                        <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                        <field name="attachment_filename" column_invisible="1"/>
+                                        <field name="uploaded_by" readonly="1"/>
+                                        <field name="upload_date" readonly="1"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_staff_contribution_line" model="ir.actions.act_window">
+            <field name="name">Contributions</field>
+            <field name="res_model">staff.contribution.line</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- ===================== Evidence: List / Form ===================== -->
+        <record id="view_staff_contribution_evidence_list" model="ir.ui.view">
+            <field name="name">staff.contribution.evidence.list</field>
+            <field name="model">staff.contribution.evidence</field>
+            <field name="arch" type="xml">
+                <list string="Evidence" editable="bottom">
+                    <field name="evaluation_id" optional="show"/>
+                    <field name="section"/>
+                    <field name="line_id"/>
+                    <field name="evidence_type_id"/>
+                    <field name="name"/>
+                    <field name="attachment" filename="attachment_filename" widget="binary"/>
+                    <field name="attachment_filename" column_invisible="1"/>
+                    <field name="uploaded_by" readonly="1"/>
+                    <field name="upload_date" readonly="1"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_staff_contribution_evidence" model="ir.actions.act_window">
+            <field name="name">Evidence</field>
+            <field name="res_model">staff.contribution.evidence</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+    </data>
+</odoo>

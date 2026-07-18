@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================= Category ================= -->
+        <record id="module_category_contribution_evaluation" model="ir.module.category">
+            <field name="name">Staff Contribution Evaluation</field>
+            <field name="description">Access rights for the Quarterly Significant Contribution Evaluation module.</field>
+            <field name="sequence">25</field>
+        </record>
+
+        <!-- ================= Privilege (Odoo 19: replaces direct category_id on res.groups) ================= -->
+        <record id="groups_privilege_contribution_evaluation" model="res.groups.privilege">
+            <field name="name">Staff Contribution Evaluation</field>
+            <field name="category_id" ref="module_category_contribution_evaluation"/>
+            <field name="sequence">25</field>
+        </record>
+
+        <!-- ================= Groups ================= -->
+        <record id="group_contribution_user" model="res.groups">
+            <field name="name">Contribution Evaluation User</field>
+            <field name="privilege_id" ref="groups_privilege_contribution_evaluation"/>
+            <field name="comment">Employees: create and manage their own quarterly contribution evaluations.</field>
+        </record>
+
+        <record id="group_contribution_manager" model="res.groups">
+            <field name="name">Contribution Evaluation Manager</field>
+            <field name="privilege_id" ref="groups_privilege_contribution_evaluation"/>
+            <field name="implied_ids" eval="[(4, ref('group_contribution_user'))]"/>
+            <field name="comment">Reporting Managers: review, rate and score evaluations of their reportees.</field>
+        </record>
+
+        <record id="group_contribution_hr" model="res.groups">
+            <field name="name">Contribution Evaluation HR</field>
+            <field name="privilege_id" ref="groups_privilege_contribution_evaluation"/>
+            <field name="implied_ids" eval="[(4, ref('group_contribution_manager'))]"/>
+            <field name="comment">HR: view all evaluations, add HR remarks and forward to Director.</field>
+        </record>
+
+        <record id="group_contribution_director" model="res.groups">
+            <field name="name">Contribution Evaluation Director</field>
+            <field name="privilege_id" ref="groups_privilege_contribution_evaluation"/>
+            <field name="implied_ids" eval="[(4, ref('group_contribution_user'))]"/>
+            <field name="comment">Director: review and approve/finalize evaluations forwarded by HR.</field>
+        </record>
+
+        <record id="group_contribution_admin" model="res.groups">
+            <field name="name">Contribution Evaluation Administrator</field>
+            <field name="privilege_id" ref="groups_privilege_contribution_evaluation"/>
+            <field name="implied_ids" eval="[(4, ref('group_contribution_hr')), (4, ref('group_contribution_director'))]"/>
+            <field name="comment">Full access, including configuration of contribution types, evidence types and evaluation criteria.</field>
+            <field name="user_ids" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- ================= Record Rules ================= -->
+
+        <!-- Employee: only own evaluations -->
+        <record id="rule_evaluation_employee_own" model="ir.rule">
+            <field name="name">Contribution Evaluation: Employee sees own</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_contribution_user'))]"/>
+            <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <!-- Manager: own evaluations + evaluations of reportees -->
+        <record id="rule_evaluation_manager_team" model="ir.rule">
+            <field name="name">Contribution Evaluation: Manager sees team</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_contribution_manager'))]"/>
+            <field name="domain_force">['|', '|', ('manager_id.user_id', '=', user.id), ('employee_id.user_id', '=', user.id), ('user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- HR / Director / Admin: all evaluations in allowed companies -->
+        <record id="rule_evaluation_hr_all" model="ir.rule">
+            <field name="name">Contribution Evaluation: HR sees all</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_contribution_hr'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_evaluation_director_all" model="ir.rule">
+            <field name="name">Contribution Evaluation: Director sees required</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_contribution_director'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- Multi-company: restrict to allowed companies for everyone -->
+        <record id="rule_evaluation_multi_company" model="ir.rule">
+            <field name="name">Contribution Evaluation: multi-company</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <!-- Contribution lines follow the parent evaluation's visibility -->
+        <record id="rule_line_employee_own" model="ir.rule">
+            <field name="name">Contribution Line: Employee sees own</field>
+            <field name="model_id" ref="model_staff_contribution_line"/>
+            <field name="groups" eval="[(4, ref('group_contribution_user'))]"/>
+            <field name="domain_force">['|', ('evaluation_id.employee_id.user_id', '=', user.id), ('evaluation_id.user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_line_manager_team" model="ir.rule">
+            <field name="name">Contribution Line: Manager sees team</field>
+            <field name="model_id" ref="model_staff_contribution_line"/>
+            <field name="groups" eval="[(4, ref('group_contribution_manager'))]"/>
+            <field name="domain_force">['|', '|', ('evaluation_id.manager_id.user_id', '=', user.id), ('evaluation_id.employee_id.user_id', '=', user.id), ('evaluation_id.user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_line_hr_all" model="ir.rule">
+            <field name="name">Contribution Line: HR sees all</field>
+            <field name="model_id" ref="model_staff_contribution_line"/>
+            <field name="groups" eval="[(4, ref('group_contribution_hr'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <!-- Evidence follows the same visibility as lines -->
+        <record id="rule_evidence_employee_own" model="ir.rule">
+            <field name="name">Evidence: Employee sees own</field>
+            <field name="model_id" ref="model_staff_contribution_evidence"/>
+            <field name="groups" eval="[(4, ref('group_contribution_user'))]"/>
+            <field name="domain_force">['|', ('evaluation_id.employee_id.user_id', '=', user.id), ('evaluation_id.user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_evidence_manager_team" model="ir.rule">
+            <field name="name">Evidence: Manager sees team</field>
+            <field name="model_id" ref="model_staff_contribution_evidence"/>
+            <field name="groups" eval="[(4, ref('group_contribution_manager'))]"/>
+            <field name="domain_force">['|', '|', ('evaluation_id.manager_id.user_id', '=', user.id), ('evaluation_id.employee_id.user_id', '=', user.id), ('evaluation_id.user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_evidence_hr_all" model="ir.rule">
+            <field name="name">Evidence: HR sees all</field>
+            <field name="model_id" ref="model_staff_contribution_evidence"/>
+            <field name="groups" eval="[(4, ref('group_contribution_hr'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <!-- Scorecard: manager and above only -->
+        <record id="rule_score_manager_team" model="ir.rule">
+            <field name="name">Scorecard: Manager sees team</field>
+            <field name="model_id" ref="model_staff_evaluation_score"/>
+            <field name="groups" eval="[(4, ref('group_contribution_manager'))]"/>
+            <field name="domain_force">['|', ('evaluation_id.manager_id.user_id', '=', user.id), ('evaluation_id.user_id', '=', user.id)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_score_hr_all" model="ir.rule">
+            <field name="name">Scorecard: HR sees all</field>
+            <field name="model_id" ref="model_staff_evaluation_score"/>
+            <field name="groups" eval="[(4, ref('group_contribution_hr'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_score_director_read" model="ir.rule">
+            <field name="name">Scorecard: Director read</field>
+            <field name="model_id" ref="model_staff_evaluation_score"/>
+            <field name="groups" eval="[(4, ref('group_contribution_director'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+    </data>
+</odoo>

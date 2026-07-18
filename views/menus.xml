@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_staff_contribution_root"
+                  name="Staff Contribution"
+                  sequence="70"
+                  web_icon="staff_contribution_evaluation,static/description/icon.png"
+                  groups="staff_contribution_evaluation.group_contribution_user"/>
+
+        <menuitem id="menu_staff_contribution_my_evaluations"
+                  name="My Evaluations"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_my"
+                  sequence="10"/>
+
+        <menuitem id="menu_staff_contribution_team_evaluations"
+                  name="Team Evaluations"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_team"
+                  groups="staff_contribution_evaluation.group_contribution_manager"
+                  sequence="20"/>
+
+        <menuitem id="menu_staff_contribution_all_evaluations"
+                  name="All Evaluations"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_all"
+                  groups="staff_contribution_evaluation.group_contribution_hr"
+                  sequence="30"/>
+
+        <menuitem id="menu_staff_contribution_manager_review"
+                  name="Manager Review"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_manager_review"
+                  groups="staff_contribution_evaluation.group_contribution_manager"
+                  sequence="40"/>
+
+        <menuitem id="menu_staff_contribution_hr_review"
+                  name="HR Review"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_hr_review"
+                  groups="staff_contribution_evaluation.group_contribution_hr"
+                  sequence="50"/>
+
+        <menuitem id="menu_staff_contribution_director_review"
+                  name="Director Review"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_director_review"
+                  groups="staff_contribution_evaluation.group_contribution_director"
+                  sequence="60"/>
+
+        <menuitem id="menu_staff_contribution_approved"
+                  name="Approved Evaluations"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_approved"
+                  groups="staff_contribution_evaluation.group_contribution_hr"
+                  sequence="70"/>
+
+        <menuitem id="menu_staff_contribution_reporting"
+                  name="Reporting"
+                  parent="menu_staff_contribution_root"
+                  action="action_staff_contribution_evaluation_reporting"
+                  groups="staff_contribution_evaluation.group_contribution_hr"
+                  sequence="80"/>
+
+        <menuitem id="menu_staff_contribution_configuration"
+                  name="Configuration"
+                  parent="menu_staff_contribution_root"
+                  groups="staff_contribution_evaluation.group_contribution_admin"
+                  sequence="90"/>
+
+        <menuitem id="menu_staff_contribution_type"
+                  name="Contribution Types"
+                  parent="menu_staff_contribution_configuration"
+                  action="action_staff_contribution_type"
+                  sequence="10"/>
+
+        <menuitem id="menu_staff_evaluation_criteria"
+                  name="Evaluation Criteria"
+                  parent="menu_staff_contribution_configuration"
+                  action="action_staff_evaluation_criteria"
+                  sequence="20"/>
+
+        <menuitem id="menu_staff_evidence_type"
+                  name="Evidence Types"
+                  parent="menu_staff_contribution_configuration"
+                  action="action_staff_evidence_type"
+                  sequence="30"/>
+
+    </data>
+</odoo>

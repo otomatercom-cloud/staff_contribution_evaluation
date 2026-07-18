@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="crit_business_impact" model="staff.evaluation.criteria">
+            <field name="name">Business Impact</field>
+            <field name="weight">30</field>
+            <field name="sequence">10</field>
+            <field name="description">Overall measurable business value created: revenue, cost savings, or strategic value.</field>
+        </record>
+        <record id="crit_initiative_innovation" model="staff.evaluation.criteria">
+            <field name="name">Initiative &amp; Innovation</field>
+            <field name="weight">20</field>
+            <field name="sequence">20</field>
+            <field name="description">New ideas, problem-solving, and proactive initiatives beyond routine duties.</field>
+        </record>
+        <record id="crit_cross_dept_support" model="staff.evaluation.criteria">
+            <field name="name">Cross-Department Support</field>
+            <field name="weight">15</field>
+            <field name="sequence">30</field>
+            <field name="description">Collaboration and support extended to other departments.</field>
+        </record>
+        <record id="crit_cost_consciousness" model="staff.evaluation.criteria">
+            <field name="name">Cost Consciousness</field>
+            <field name="weight">10</field>
+            <field name="sequence">40</field>
+            <field name="description">Attention to cost efficiency and resource optimization.</field>
+        </record>
+        <record id="crit_revenue_contribution" model="staff.evaluation.criteria">
+            <field name="name">Revenue Contribution</field>
+            <field name="weight">10</field>
+            <field name="sequence">50</field>
+            <field name="description">Direct contribution to revenue generation or protection.</field>
+        </record>
+        <record id="crit_brand_building" model="staff.evaluation.criteria">
+            <field name="name">Brand Building</field>
+            <field name="weight">5</field>
+            <field name="sequence">60</field>
+            <field name="description">Contribution to institutional brand and public reputation.</field>
+        </record>
+        <record id="crit_teamwork" model="staff.evaluation.criteria">
+            <field name="name">Teamwork</field>
+            <field name="weight">5</field>
+            <field name="sequence">70</field>
+            <field name="description">Collaboration and support within the immediate team.</field>
+        </record>
+        <record id="crit_leadership_potential" model="staff.evaluation.criteria">
+            <field name="name">Leadership Potential</field>
+            <field name="weight">5</field>
+            <field name="sequence">80</field>
+            <field name="description">Demonstrated ability to guide, mentor, or lead others.</field>
+        </record>
+    </data>
+</odoo>

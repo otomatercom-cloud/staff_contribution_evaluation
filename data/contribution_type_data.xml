@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Section A: Revenue Contribution -->
+        <record id="ct_a_admissions_beyond_target" model="staff.contribution.type"><field name="name">Admissions Beyond Target</field><field name="section">a</field><field name="sequence">10</field></record>
+        <record id="ct_a_referral_admissions" model="staff.contribution.type"><field name="name">Referral Admissions</field><field name="section">a</field><field name="sequence">20</field></record>
+        <record id="ct_a_cross_selling" model="staff.contribution.type"><field name="name">Cross-selling</field><field name="section">a</field><field name="sequence">30</field></record>
+        <record id="ct_a_university_partnership" model="staff.contribution.type"><field name="name">University Partnership</field><field name="section">a</field><field name="sequence">40</field></record>
+        <record id="ct_a_corporate_training" model="staff.contribution.type"><field name="name">Corporate Training</field><field name="section">a</field><field name="sequence">50</field></record>
+        <record id="ct_a_consultancy_assignment" model="staff.contribution.type"><field name="name">Consultancy Assignment</field><field name="section">a</field><field name="sequence">60</field></record>
+        <record id="ct_a_sponsorship" model="staff.contribution.type"><field name="name">Sponsorship</field><field name="section">a</field><field name="sequence">70</field></record>
+        <record id="ct_a_new_business_partnership" model="staff.contribution.type"><field name="name">New Business Partnership</field><field name="section">a</field><field name="sequence">80</field></record>
+        <record id="ct_a_outstanding_fee_collection" model="staff.contribution.type"><field name="name">Outstanding Fee Collection</field><field name="section">a</field><field name="sequence">90</field></record>
+        <record id="ct_a_recovery_of_old_dues" model="staff.contribution.type"><field name="name">Recovery of Old Dues</field><field name="section">a</field><field name="sequence">100</field></record>
+        <record id="ct_a_student_retention" model="staff.contribution.type"><field name="name">Student Retention</field><field name="section">a</field><field name="sequence">110</field></record>
+        <record id="ct_a_other" model="staff.contribution.type"><field name="name">Other</field><field name="section">a</field><field name="sequence">120</field></record>
+
+        <!-- Section B: Cost Reduction -->
+        <record id="ct_b_electricity_saving" model="staff.contribution.type"><field name="name">Electricity Saving</field><field name="section">b</field><field name="sequence">10</field></record>
+        <record id="ct_b_printing_cost" model="staff.contribution.type"><field name="name">Printing Cost</field><field name="section">b</field><field name="sequence">20</field></record>
+        <record id="ct_b_vendor_negotiation" model="staff.contribution.type"><field name="name">Vendor Negotiation</field><field name="section">b</field><field name="sequence">30</field></record>
+        <record id="ct_b_faculty_utilization" model="staff.contribution.type"><field name="name">Faculty Utilization</field><field name="section">b</field><field name="sequence">40</field></record>
+        <record id="ct_b_classroom_utilization" model="staff.contribution.type"><field name="name">Classroom Utilization</field><field name="section">b</field><field name="sequence">50</field></record>
+        <record id="ct_b_inventory_control" model="staff.contribution.type"><field name="name">Inventory Control</field><field name="section">b</field><field name="sequence">60</field></record>
+        <record id="ct_b_marketing_cost_saving" model="staff.contribution.type"><field name="name">Marketing Cost Saving</field><field name="section">b</field><field name="sequence">70</field></record>
+        <record id="ct_b_software_cost_saving" model="staff.contribution.type"><field name="name">Software Cost Saving</field><field name="section">b</field><field name="sequence">80</field></record>
+        <record id="ct_b_other" model="staff.contribution.type"><field name="name">Other</field><field name="section">b</field><field name="sequence">90</field></record>
+
+        <!-- Section C: Digital & Marketing Contribution -->
+        <record id="ct_c_viral_reel" model="staff.contribution.type"><field name="name">Viral Reel</field><field name="section">c</field><field name="sequence">10</field></record>
+        <record id="ct_c_campaign" model="staff.contribution.type"><field name="name">Campaign</field><field name="section">c</field><field name="sequence">20</field></record>
+        <record id="ct_c_newspaper_coverage" model="staff.contribution.type"><field name="name">Newspaper Coverage</field><field name="section">c</field><field name="sequence">30</field></record>
+        <record id="ct_c_television_coverage" model="staff.contribution.type"><field name="name">Television Coverage</field><field name="section">c</field><field name="sequence">40</field></record>
+        <record id="ct_c_alumni_campaign" model="staff.contribution.type"><field name="name">Alumni Campaign</field><field name="section">c</field><field name="sequence">50</field></record>
+        <record id="ct_c_placement_campaign" model="staff.contribution.type"><field name="name">Placement Campaign</field><field name="section">c</field><field name="sequence">60</field></record>
+        <record id="ct_c_student_testimonial" model="staff.contribution.type"><field name="name">Student Testimonial</field><field name="section">c</field><field name="sequence">70</field></record>
+        <record id="ct_c_influencer_collaboration" model="staff.contribution.type"><field name="name">Influencer Collaboration</field><field name="section">c</field><field name="sequence">80</field></record>
+        <record id="ct_c_brand_awareness" model="staff.contribution.type"><field name="name">Brand Awareness</field><field name="section">c</field><field name="sequence">90</field></record>
+        <record id="ct_c_lead_generation" model="staff.contribution.type"><field name="name">Lead Generation</field><field name="section">c</field><field name="sequence">100</field></record>
+
+        <!-- Section D: Student Success Contribution -->
+        <record id="ct_d_doubt_sessions" model="staff.contribution.type"><field name="name">Doubt Sessions</field><field name="section">d</field><field name="sequence">10</field></record>
+        <record id="ct_d_mentoring" model="staff.contribution.type"><field name="name">Mentoring</field><field name="section">d</field><field name="sequence">20</field></record>
+        <record id="ct_d_notes" model="staff.contribution.type"><field name="name">Notes</field><field name="section">d</field><field name="sequence">30</field></record>
+        <record id="ct_d_video_classes" model="staff.contribution.type"><field name="name">Video Classes</field><field name="section">d</field><field name="sequence">40</field></record>
+        <record id="ct_d_question_bank" model="staff.contribution.type"><field name="name">Question Bank</field><field name="section">d</field><field name="sequence">50</field></record>
+        <record id="ct_d_test_series" model="staff.contribution.type"><field name="name">Test Series</field><field name="section">d</field><field name="sequence">60</field></record>
+        <record id="ct_d_parent_counselling" model="staff.contribution.type"><field name="name">Parent Counselling</field><field name="section">d</field><field name="sequence">70</field></record>
+        <record id="ct_d_weak_student_support" model="staff.contribution.type"><field name="name">Weak Student Support</field><field name="section">d</field><field name="sequence">80</field></record>
+        <record id="ct_d_rank_holder_support" model="staff.contribution.type"><field name="name">Rank Holder Support</field><field name="section">d</field><field name="sequence">90</field></record>
+
+        <!-- Section F: Partnerships & Institutional Contribution -->
+        <record id="ct_f_college_mou" model="staff.contribution.type"><field name="name">College MOU</field><field name="section">f</field><field name="sequence">10</field></record>
+        <record id="ct_f_university_partnership" model="staff.contribution.type"><field name="name">University Partnership</field><field name="section">f</field><field name="sequence">20</field></record>
+        <record id="ct_f_industry_partnership" model="staff.contribution.type"><field name="name">Industry Partnership</field><field name="section">f</field><field name="sequence">30</field></record>
+        <record id="ct_f_government_project" model="staff.contribution.type"><field name="name">Government Project</field><field name="section">f</field><field name="sequence">40</field></record>
+        <record id="ct_f_csr" model="staff.contribution.type"><field name="name">CSR</field><field name="section">f</field><field name="sequence">50</field></record>
+        <record id="ct_f_seminar" model="staff.contribution.type"><field name="name">Seminar</field><field name="section">f</field><field name="sequence">60</field></record>
+        <record id="ct_f_fdp" model="staff.contribution.type"><field name="name">FDP</field><field name="section">f</field><field name="sequence">70</field></record>
+
+        <!-- Section I: Process Improvement -->
+        <record id="ct_i_sop" model="staff.contribution.type"><field name="name">SOP</field><field name="section">i</field><field name="sequence">10</field></record>
+        <record id="ct_i_dashboard" model="staff.contribution.type"><field name="name">Dashboard</field><field name="section">i</field><field name="sequence">20</field></record>
+        <record id="ct_i_report" model="staff.contribution.type"><field name="name">Report</field><field name="section">i</field><field name="sequence">30</field></record>
+        <record id="ct_i_ai" model="staff.contribution.type"><field name="name">AI</field><field name="section">i</field><field name="sequence">40</field></record>
+        <record id="ct_i_automation" model="staff.contribution.type"><field name="name">Automation</field><field name="section">i</field><field name="sequence">50</field></record>
+        <record id="ct_i_crm" model="staff.contribution.type"><field name="name">CRM</field><field name="section">i</field><field name="sequence">60</field></record>
+        <record id="ct_i_excel_tool" model="staff.contribution.type"><field name="name">Excel Tool</field><field name="section">i</field><field name="sequence">70</field></record>
+        <record id="ct_i_documentation" model="staff.contribution.type"><field name="name">Documentation</field><field name="section">i</field><field name="sequence">80</field></record>
+
+        <!-- Section J: Student & Parent Satisfaction -->
+        <record id="ct_j_appreciation_mail" model="staff.contribution.type"><field name="name">Appreciation Mail</field><field name="section">j</field><field name="sequence">10</field></record>
+        <record id="ct_j_google_review" model="staff.contribution.type"><field name="name">Google Review</field><field name="section">j</field><field name="sequence">20</field></record>
+        <record id="ct_j_testimonial" model="staff.contribution.type"><field name="name">Testimonial</field><field name="section">j</field><field name="sequence">30</field></record>
+        <record id="ct_j_parent_feedback" model="staff.contribution.type"><field name="name">Parent Feedback</field><field name="section">j</field><field name="sequence">40</field></record>
+        <record id="ct_j_student_feedback" model="staff.contribution.type"><field name="name">Student Feedback</field><field name="section">j</field><field name="sequence">50</field></record>
+
+        <!-- Section L: Brand Building -->
+        <record id="ct_l_media_interview" model="staff.contribution.type"><field name="name">Media Interview</field><field name="section">l</field><field name="sequence">10</field></record>
+        <record id="ct_l_public_speaking" model="staff.contribution.type"><field name="name">Public Speaking</field><field name="section">l</field><field name="sequence">20</field></record>
+        <record id="ct_l_article" model="staff.contribution.type"><field name="name">Article</field><field name="section">l</field><field name="sequence">30</field></record>
+        <record id="ct_l_linkedin" model="staff.contribution.type"><field name="name">LinkedIn</field><field name="section">l</field><field name="sequence">40</field></record>
+        <record id="ct_l_event_representation" model="staff.contribution.type"><field name="name">Event Representation</field><field name="section">l</field><field name="sequence">50</field></record>
+        <record id="ct_l_award" model="staff.contribution.type"><field name="name">Award</field><field name="section">l</field><field name="sequence">60</field></record>
+
+        <!-- Section N: AI & Technology Adoption -->
+        <record id="ct_n_chatgpt" model="staff.contribution.type"><field name="name">ChatGPT</field><field name="section">n</field><field name="sequence">10</field></record>
+        <record id="ct_n_power_bi" model="staff.contribution.type"><field name="name">Power BI</field><field name="section">n</field><field name="sequence">20</field></record>
+        <record id="ct_n_excel_automation" model="staff.contribution.type"><field name="name">Excel Automation</field><field name="section">n</field><field name="sequence">30</field></record>
+        <record id="ct_n_lms_improvement" model="staff.contribution.type"><field name="name">LMS Improvement</field><field name="section">n</field><field name="sequence">40</field></record>
+        <record id="ct_n_ai_workflow" model="staff.contribution.type"><field name="name">AI Workflow</field><field name="section">n</field><field name="sequence">50</field></record>
+        <record id="ct_n_automation" model="staff.contribution.type"><field name="name">Automation</field><field name="section">n</field><field name="sequence">60</field></record>
+        <record id="ct_n_other" model="staff.contribution.type"><field name="name">Other</field><field name="section">n</field><field name="sequence">70</field></record>
+
+        <!-- Section Q: Special Recognition -->
+        <record id="ct_q_award" model="staff.contribution.type"><field name="name">Award</field><field name="section">q</field><field name="sequence">10</field></record>
+        <record id="ct_q_certificate" model="staff.contribution.type"><field name="name">Certificate</field><field name="section">q</field><field name="sequence">20</field></record>
+        <record id="ct_q_appreciation_letter" model="staff.contribution.type"><field name="name">Appreciation Letter</field><field name="section">q</field><field name="sequence">30</field></record>
+        <record id="ct_q_student_recognition" model="staff.contribution.type"><field name="name">Student Recognition</field><field name="section">q</field><field name="sequence">40</field></record>
+        <record id="ct_q_client_recognition" model="staff.contribution.type"><field name="name">Client Recognition</field><field name="section">q</field><field name="sequence">50</field></record>
+
+    </data>
+</odoo>

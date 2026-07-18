@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_evaluation_list" name="My Contribution Evaluations">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False"/>
+
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h2 class="mb-0">Quarterly Contribution Evaluations</h2>
+                <t t-if="employee">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEvaluationModal">
+                        <i class="fa fa-plus me-1"/>New Evaluation
+                    </button>
+                </t>
+            </div>
+
+            <t t-if="not employee">
+                <div class="alert alert-warning">
+                    No employee record is linked to your account. Please contact HR.
+                </div>
+            </t>
+
+            <t t-elif="not evaluations">
+                <p class="text-muted">You have no contribution evaluations yet. Click "New Evaluation" to get started.</p>
+            </t>
+
+            <table t-if="evaluations" class="table table-hover">
+                <thead>
+                    <tr class="active">
+                        <th>Evaluation No.</th>
+                        <th>Quarter</th>
+                        <th>Status</th>
+                        <th>Final Score</th>
+                        <th>Overall Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="evaluations" t-as="evaluation">
+                        <td>
+                            <a t-attf-href="/my/contribution-evaluations/#{evaluation.id}">
+                                <span t-esc="evaluation.name"/>
+                            </a>
+                        </td>
+                        <td>
+                            <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+                        </td>
+                        <td>
+                            <span class="badge text-bg-info" t-esc="evaluation.state"/>
+                        </td>
+                        <td>
+                            <t t-if="evaluation.score_line_ids">
+                                <span t-esc="'%.1f' % evaluation.final_score"/>
+                            </t>
+                            <t t-else="">—</t>
+                        </td>
+                        <td>
+                            <span t-if="evaluation.overall_rating" t-esc="evaluation.overall_rating"/>
+                            <t t-else="">—</t>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="modal fade" id="newEvaluationModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <form t-attf-action="/my/contribution-evaluations/new" method="post" class="modal-content">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="modal-header">
+                            <h5 class="modal-title">New Quarterly Evaluation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"/>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Quarter</label>
+                                <select name="quarter" class="form-select">
+                                    <option value="q1">Q1 (Jan - Mar)</option>
+                                    <option value="q2">Q2 (Apr - Jun)</option>
+                                    <option value="q3">Q3 (Jul - Sep)</option>
+                                    <option value="q4">Q4 (Oct - Dec)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Year</label>
+                                <input type="text" name="evaluation_year" class="form-control" maxlength="4" placeholder="2026"/>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_evaluation_form" name="Contribution Evaluation Form">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False"/>
+
+            <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="mb-0"><span t-esc="evaluation.name"/></h2>
+                    <div class="text-muted">
+                        <span t-esc="evaluation.employee_id.name"/> —
+                        <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <span class="badge text-bg-secondary fs-6 align-middle" t-esc="evaluation.state"/>
+                    <t t-if="evaluation.state == 'draft'">
+                        <form t-attf-action="/my/contribution-evaluations/#{evaluation.id}/submit" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button type="submit" class="btn btn-success ms-2">Submit for Review</button>
+                        </form>
+                    </t>
+                </div>
+            </div>
+
+            <div class="accordion" id="sectionsAccordion">
+                <t t-foreach="sections_data" t-as="sdata">
+                    <t t-set="cfg" t-value="sdata['cfg']"/>
+                    <t t-set="sec_code" t-value="sdata['code']"/>
+                    <div class="accordion-item" t-attf-id="section-#{sec_code}">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" t-attf-data-bs-target="#collapse-#{sec_code}">
+                                <span t-esc="cfg['title']"/>
+                                <span class="badge text-bg-light border ms-2" t-esc="len(sdata['cards'])"/>
+                            </button>
+                        </h2>
+                        <div t-attf-id="collapse-#{sec_code}" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <p t-if="cfg.get('intro')" class="text-muted fst-italic" t-esc="cfg['intro']"/>
+
+                                <div t-if="sdata['cards']" class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+                                    <t t-foreach="sdata['cards']" t-as="card">
+                                        <div class="col">
+                                            <div class="card h-100 shadow-sm">
+                                                <div class="card-body">
+                                                    <h6 class="card-title" t-esc="card['title']"/>
+                                                    <t t-foreach="card['details']" t-as="detail">
+                                                        <div class="small text-muted">
+                                                            <span t-esc="detail[0]"/>: <span t-esc="detail[1]"/>
+                                                        </div>
+                                                    </t>
+                                                    <div t-if="cfg.get('has_types')" class="small mt-1">
+                                                        <span t-foreach="card['line'].contribution_type_ids" t-as="ctype"
+                                                              class="badge text-bg-light border me-1" t-esc="ctype.name"/>
+                                                    </div>
+                                                    <div t-if="cfg.get('has_departments')" class="small mt-1">
+                                                        <span t-foreach="card['line'].department_ids" t-as="dept"
+                                                              class="badge text-bg-light border me-1" t-esc="dept.name"/>
+                                                    </div>
+                                                    <div t-if="cfg.get('has_self_rating')" class="small text-muted">
+                                                        Self-Rating: <span t-esc="card['line'].self_rating"/>/5
+                                                    </div>
+                                                    <div t-if="cfg.get('has_evidence')" class="small text-muted">
+                                                        Evidence:
+                                                        <t t-if="card['line'].has_evidence">Yes</t>
+                                                        <t t-else="">No</t>
+                                                    </div>
+                                                    <form t-if="evaluation.state == 'draft'"
+                                                          t-attf-action="/my/contribution-evaluations/#{evaluation.id}/line/#{card['line'].id}/delete"
+                                                          method="post" class="mt-2">
+                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <form t-if="evaluation.state == 'draft'"
+                                      t-attf-action="/my/contribution-evaluations/#{evaluation.id}/line/#{sec_code}/add"
+                                      method="post" enctype="multipart/form-data" class="border rounded p-3 bg-light">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div t-if="cfg.get('has_types')" class="mb-3">
+                                        <label class="form-label fw-bold">Tick Applicable</label>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="form-check" t-foreach="sdata['types']" t-as="ctype">
+                                                <input class="form-check-input" type="checkbox" name="type_ids"
+                                                       t-att-value="ctype.id" t-attf-id="type-#{sec_code}-#{ctype.id}"/>
+                                                <label class="form-check-label" t-attf-for="type-#{sec_code}-#{ctype.id}" t-esc="ctype.name"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div t-if="cfg.get('has_departments')" class="mb-3">
+                                        <label class="form-label fw-bold">Which departments benefited?</label>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="form-check" t-foreach="departments" t-as="dept">
+                                                <input class="form-check-input" type="checkbox" name="department_ids"
+                                                       t-att-value="dept.id" t-attf-id="dept-#{sec_code}-#{dept.id}"/>
+                                                <label class="form-check-label" t-attf-for="dept-#{sec_code}-#{dept.id}" t-esc="dept.name"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        <t t-foreach="cfg['fields']" t-as="fdef">
+                                            <t t-set="fname" t-value="fdef[0]"/>
+                                            <t t-set="flabel" t-value="fdef[1]"/>
+                                            <t t-set="ftype" t-value="fdef[2]"/>
+                                            <div t-attf-class="#{'col-12' if ftype == 'text' else 'col-12 col-md-6'}">
+                                                <label class="form-label" t-esc="flabel"/>
+                                                <textarea t-if="ftype == 'text'" t-att-name="fname" class="form-control" rows="2"/>
+                                                <input t-elif="ftype == 'integer'" type="number" t-att-name="fname"
+                                                       class="form-control" step="1" min="0"/>
+                                                <div t-elif="ftype == 'monetary'" class="input-group">
+                                                    <span class="input-group-text" t-esc="evaluation.currency_id.symbol"/>
+                                                    <input type="number" t-att-name="fname" class="form-control" step="0.01" min="0"/>
+                                                </div>
+                                                <input t-elif="fname == 'name'" type="text" t-att-name="fname"
+                                                       class="form-control" required="required"/>
+                                                <input t-else="" type="text" t-att-name="fname" class="form-control"/>
+                                            </div>
+                                        </t>
+                                    </div>
+
+                                    <div t-if="cfg.get('has_self_rating')" class="mt-3">
+                                        <label class="form-label">Self-Rating (0-5)</label>
+                                        <select name="self_rating" class="form-select" style="max-width:120px;">
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+
+                                    <div t-if="cfg.get('has_evidence')" class="mt-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch" name="has_evidence"
+                                                   t-attf-id="evidence-toggle-#{sec_code}"
+                                                   t-attf-onchange="document.getElementById('evidence-file-#{sec_code}').classList.toggle('d-none', !this.checked)"/>
+                                            <label class="form-check-label" t-attf-for="evidence-toggle-#{sec_code}">Supporting Evidence Attached</label>
+                                        </div>
+                                        <div t-attf-id="evidence-file-#{sec_code}" class="mt-2 d-none">
+                                            <input type="file" name="evidence_file" class="form-control"/>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <i class="fa fa-plus me-1"/>Add Entry
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header fw-bold">Employee Remarks</div>
+                <div class="card-body">
+                    <form t-if="evaluation.state == 'draft'"
+                          t-attf-action="/my/contribution-evaluations/#{evaluation.id}/save-remarks" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <textarea name="employee_remarks" class="form-control" rows="3"><t t-esc="evaluation.employee_remarks"/></textarea>
+                        <button type="submit" class="btn btn-outline-primary mt-2">Save Remarks</button>
+                    </form>
+                    <p t-else="" t-esc="evaluation.employee_remarks or 'No remarks.'"/>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="mail_template_submitted" model="mail.template">
+            <field name="name">Contribution Evaluation: Submitted to Manager</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="subject">Contribution Evaluation {{ object.name }} awaiting your review</field>
+            <field name="email_to">{{ object.manager_id.work_email or '' }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear {{ object.manager_id.name or 'Manager' }},</p>
+                    <p>
+                        {{ object.employee_id.name }} has submitted the quarterly contribution
+                        evaluation <strong>{{ object.name }}</strong> for
+                        {{ (object.quarter or '').upper() }} {{ object.evaluation_year }}.
+                        Please review the contributions and complete the manager scorecard.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_returned" model="mail.template">
+            <field name="name">Contribution Evaluation: Returned</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="subject">Contribution Evaluation {{ object.name }} returned for update</field>
+            <field name="email_to">{{ object.employee_id.work_email or object.manager_id.work_email or '' }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Hello,</p>
+                    <p>
+                        Evaluation <strong>{{ object.name }}</strong> for
+                        {{ object.employee_id.name }} has been returned for changes.
+                        Please review the remarks and resubmit.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_hr_review" model="mail.template">
+            <field name="name">Contribution Evaluation: HR Review</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="subject">Contribution Evaluation {{ object.name }} ready for HR review</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <p>
+                        Evaluation <strong>{{ object.name }}</strong> for
+                        {{ object.employee_id.name }} has completed manager review and is
+                        ready for HR review.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_director_review" model="mail.template">
+            <field name="name">Contribution Evaluation: Director Review</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="subject">Contribution Evaluation {{ object.name }} ready for Director review</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <p>
+                        Evaluation <strong>{{ object.name }}</strong> for
+                        {{ object.employee_id.name }} has been forwarded by HR and is ready
+                        for Director review.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_approved" model="mail.template">
+            <field name="name">Contribution Evaluation: Approved</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="subject">Contribution Evaluation {{ object.name }} approved</field>
+            <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear {{ object.employee_id.name }},</p>
+                    <p>
+                        Your quarterly contribution evaluation <strong>{{ object.name }}</strong> has been
+                        approved with a final score of {{ '%.2f' % object.final_score }}
+                        ({{ dict(object._fields['overall_rating'].selection).get(object.overall_rating, '') }}).
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_rejected" model="mail.template">
+            <field name="name">Contribution Evaluation: Rejected</field>
+            <field name="model_id" ref="model_staff_contribution_evaluation"/>
+            <field name="subject">Contribution Evaluation {{ object.name }} rejected</field>
+            <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear {{ object.employee_id.name }},</p>
+                    <p>
+                        Your quarterly contribution evaluation <strong>{{ object.name }}</strong> has been
+                        rejected. Please review the remarks for details.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

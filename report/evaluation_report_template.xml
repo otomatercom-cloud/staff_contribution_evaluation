@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_staff_contribution_evaluation_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <t t-set="section_labels" t-value="dict(o.env['staff.contribution.line']._fields['section'].selection)"/>
+
+                <h2>
+                    Quarterly Significant Contribution Evaluation
+                </h2>
+                <table class="table table-sm table-borderless mb-3">
+                    <tr>
+                        <td><strong>Evaluation No.:</strong> <span t-field="o.name"/></td>
+                        <td><strong>Status:</strong> <span t-field="o.state"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Employee:</strong> <span t-field="o.employee_id.name"/></td>
+                        <td><strong>Employee ID:</strong> <span t-field="o.employee_code"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Department:</strong> <span t-field="o.department_id.name"/></td>
+                        <td><strong>Designation:</strong> <span t-field="o.job_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Branch:</strong> <span t-field="o.work_location_id.name"/></td>
+                        <td><strong>Reporting Manager:</strong> <span t-field="o.manager_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quarter:</strong> <span t-field="o.quarter"/> <span t-field="o.evaluation_year"/></td>
+                        <td><strong>Period:</strong> <span t-field="o.date_from"/> to <span t-field="o.date_to"/></td>
+                    </tr>
+                </table>
+
+                <h3>Contribution Sections</h3>
+                <t t-foreach="section_labels" t-as="sec_code">
+                    <t t-set="sec_lines" t-value="o.line_ids.filtered(lambda l: l.section == sec_code)"/>
+                    <t t-if="sec_lines">
+                        <h4 t-esc="section_labels[sec_code]"/>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description / Impact</th>
+                                    <th>Self Rating</th>
+                                    <th>Manager Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="sec_lines" t-as="line">
+                                    <td><span t-field="line.name"/></td>
+                                    <td>
+                                        <span t-field="line.description"/>
+                                        <span t-if="line.business_impact"> — <span t-field="line.business_impact"/></span>
+                                    </td>
+                                    <td>
+                                        <span t-if="line.has_self_rating" t-field="line.self_rating"/>
+                                        <span t-else="">-</span>
+                                    </td>
+                                    <td><span t-field="line.manager_rating"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+
+                <h3>KPI Summary</h3>
+                <table class="table table-sm table-bordered">
+                    <tr><td>Revenue Generated</td><td><span t-field="o.kpi_revenue_generated"/></td>
+                        <td>Revenue Protected</td><td><span t-field="o.kpi_revenue_protected"/></td></tr>
+                    <tr><td>Cost Saved</td><td><span t-field="o.kpi_cost_saved"/></td>
+                        <td>Admissions Influenced</td><td><span t-field="o.kpi_admissions_influenced"/></td></tr>
+                    <tr><td>Leads Generated</td><td><span t-field="o.kpi_leads_generated"/></td>
+                        <td>Campaign Reach</td><td><span t-field="o.kpi_campaign_reach"/></td></tr>
+                    <tr><td>Students Placed</td><td><span t-field="o.kpi_students_placed"/></td>
+                        <td>Recruiters Added</td><td><span t-field="o.kpi_recruiters_added"/></td></tr>
+                    <tr><td>KPI Achievement (%)</td><td><span t-field="o.kpi_achievement"/></td>
+                        <td>Student Satisfaction</td><td><span t-field="o.kpi_student_satisfaction"/></td></tr>
+                </table>
+
+                <h3>Manager Evaluation Scorecard</h3>
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr><th>Criteria</th><th>Weight (%)</th><th>Score (0-100)</th><th>Weighted Score</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.score_line_ids" t-as="score">
+                            <td><span t-field="score.criteria_id.name"/></td>
+                            <td><span t-field="score.weight"/></td>
+                            <td><span t-field="score.score"/></td>
+                            <td><span t-field="score.weighted_score"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td><strong>Final Score:</strong> <span t-field="o.final_score"/></td>
+                        <td><strong>Overall Rating:</strong> <span t-field="o.overall_rating"/></td>
+                    </tr>
+                </table>
+
+                <h3>Remarks</h3>
+                <table class="table table-sm table-borderless">
+                    <tr><td><strong>Employee Remarks:</strong></td><td><span t-field="o.employee_remarks"/></td></tr>
+                    <tr><td><strong>Reporting Manager Remarks:</strong></td><td><span t-field="o.manager_remarks"/></td></tr>
+                    <tr><td><strong>HR Remarks:</strong></td><td><span t-field="o.hr_remarks"/></td></tr>
+                    <tr><td><strong>Director Remarks:</strong></td><td><span t-field="o.director_remarks"/></td></tr>
+                </table>
+
+                <p class="text-muted mt-4">
+                    Date of Submission: <span t-field="o.date_submitted"/> |
+                    Generated on: <span t-esc="context_timestamp(datetime.datetime.now())" t-options="{'widget': 'datetime'}"/>
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_staff_contribution_evaluation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="staff_contribution_evaluation.report_staff_contribution_evaluation_document" t-lang="o.employee_id.address_home_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

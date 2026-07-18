@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_staff_contribution_evaluation" model="ir.sequence">
+            <field name="name">Staff Contribution Evaluation</field>
+            <field name="code">staff.contribution.evaluation</field>
+            <field name="prefix">SCE/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

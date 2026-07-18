@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ===================== List ===================== -->
+        <record id="view_staff_contribution_evaluation_list" model="ir.ui.view">
+            <field name="name">staff.contribution.evaluation.list</field>
+            <field name="model">staff.contribution.evaluation</field>
+            <field name="arch" type="xml">
+                <list string="Contribution Evaluations" decoration-muted="state == 'cancelled'" decoration-success="state == 'approved'" decoration-danger="state == 'rejected'">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="department_id" optional="show"/>
+                    <field name="manager_id" optional="show"/>
+                    <field name="quarter"/>
+                    <field name="evaluation_year"/>
+                    <field name="date_submitted" optional="hide"/>
+                    <field name="final_score" optional="show" widget="progressbar" options="{'max_value': 100}"/>
+                    <field name="overall_rating" optional="show"/>
+                    <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-danger="state == 'rejected'" decoration-info="state in ('submitted', 'manager_review', 'hr_review', 'director_review')"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ===================== Kanban ===================== -->
+        <record id="view_staff_contribution_evaluation_kanban" model="ir.ui.view">
+            <field name="name">staff.contribution.evaluation.kanban</field>
+            <field name="model">staff.contribution.evaluation</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="quarter"/>
+                    <field name="evaluation_year"/>
+                    <field name="final_score"/>
+                    <field name="overall_rating"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <strong><field name="name"/></strong>
+                                <div><field name="employee_id"/></div>
+                                <div>
+                                    <field name="quarter"/> / <field name="evaluation_year"/>
+                                </div>
+                                <div t-if="record.overall_rating.raw_value">
+                                    <span class="badge text-bg-info"><field name="overall_rating"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ===================== Search ===================== -->
+        <record id="view_staff_contribution_evaluation_search" model="ir.ui.view">
+            <field name="name">staff.contribution.evaluation.search</field>
+            <field name="model">staff.contribution.evaluation</field>
+            <field name="arch" type="xml">
+                <search string="Search Contribution Evaluations">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="manager_id"/>
+                    <field name="department_id"/>
+                    <field name="work_location_id"/>
+                    <filter string="My Evaluations" name="my_evaluations" domain="[('employee_id.user_id', '=', uid)]"/>
+                    <filter string="My Team" name="my_team" domain="[('manager_id.user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Manager Review" name="state_manager" domain="[('state', 'in', ('submitted', 'manager_review'))]"/>
+                    <filter string="HR Review" name="state_hr" domain="[('state', '=', 'hr_review')]"/>
+                    <filter string="Director Review" name="state_director" domain="[('state', '=', 'director_review')]"/>
+                    <filter string="Approved" name="state_approved" domain="[('state', '=', 'approved')]"/>
+                    <filter string="Rejected" name="state_rejected" domain="[('state', '=', 'rejected')]"/>
+                    <separator/>
+                    <filter string="This Year" name="this_year" domain="[('evaluation_year', '=', context_today().strftime('%Y'))]"/>
+                    <separator/>
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Manager" name="group_manager" context="{'group_by': 'manager_id'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
+                    <filter string="Quarter" name="group_quarter" context="{'group_by': 'quarter'}"/>
+                    <filter string="Year" name="group_year" context="{'group_by': 'evaluation_year'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Overall Rating" name="group_rating" context="{'group_by': 'overall_rating'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- ===================== Form ===================== -->
+        <record id="view_staff_contribution_evaluation_form" model="ir.ui.view">
+            <field name="name">staff.contribution.evaluation.form</field>
+            <field name="model">staff.contribution.evaluation</field>
+            <field name="arch" type="xml">
+                <form string="Staff Contribution Evaluation">
+                    <header>
+                        <button name="action_submit" string="Submit" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_start_manager_review" string="Start Manager Review" type="object" class="oe_highlight" invisible="state != 'submitted'" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                        <button name="action_manager_submit_hr" string="Submit to HR" type="object" class="oe_highlight" invisible="state not in ('submitted', 'manager_review')" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                        <button name="action_return_to_employee" string="Return to Employee" type="object" invisible="state not in ('submitted', 'manager_review', 'hr_review')" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                        <button name="action_hr_submit_director" string="Submit to Director" type="object" class="oe_highlight" invisible="state != 'hr_review'" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                        <button name="action_hr_return" string="Return to Manager" type="object" invisible="state != 'hr_review'" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                        <button name="action_director_approve" string="Approve" type="object" class="oe_highlight" invisible="state != 'director_review'" groups="staff_contribution_evaluation.group_contribution_director"/>
+                        <button name="action_director_return" string="Return to HR" type="object" invisible="state != 'director_review'" groups="staff_contribution_evaluation.group_contribution_director"/>
+                        <button name="action_reject" string="Reject" type="object" invisible="state in ('approved', 'rejected', 'cancelled', 'draft')" confirm="Are you sure you want to reject this evaluation?" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="state in ('approved', 'cancelled')"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" invisible="state == 'draft'" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,submitted,manager_review,hr_review,director_review,approved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-list">
+                                <field name="line_count" widget="statinfo" string="Contributions"/>
+                            </button>
+                            <button name="action_view_evidence" type="object" class="oe_stat_button" icon="fa-paperclip">
+                                <field name="evidence_count" widget="statinfo" string="Evidence"/>
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="Approved" bg_color="text-bg-success" invisible="state != 'approved'"/>
+                        <widget name="web_ribbon" title="Rejected" bg_color="text-bg-danger" invisible="state != 'rejected'"/>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="employee_id" readonly="state != 'draft'"/>
+                                <field name="employee_code"/>
+                                <field name="department_id"/>
+                                <field name="job_id"/>
+                                <field name="work_location_id"/>
+                            </group>
+                            <group>
+                                <field name="manager_id" readonly="state != 'draft'"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="quarter" readonly="state != 'draft'"/>
+                                <field name="evaluation_year" readonly="state != 'draft'"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="date_submitted"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Business Contribution" name="business_contribution">
+                                <group string="A. Revenue Contribution">
+                                    <field name="revenue_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'a'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="revenue_generated"/>
+                                            <field name="estimated_business_impact"/>
+                                            <field name="has_evidence"/>
+                                            <field name="self_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Revenue Generated: <field name="revenue_generated"/></div>
+                                                        <div>Estimated Business Impact: <field name="estimated_business_impact"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div>Self-Rating: <field name="self_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Revenue Contribution">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick Applicable Contribution">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Contribution Details">
+                                                    <field name="name" string="Activity" placeholder="What was your contribution?"/>
+                                                    <field name="revenue_generated" string="Revenue Generated"/>
+                                                    <field name="estimated_business_impact" string="Estimated Business Impact"/>
+                                                    <field name="has_evidence" string="Supporting Evidence Attached" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="self_rating" string="Self-Rating (0-5)"/>
+                                                    <field name="manager_rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="B. Cost Reduction">
+                                    <field name="cost_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'b'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="cost_saved"/>
+                                            <field name="has_evidence"/>
+                                            <field name="self_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Estimated Annual Saving: <field name="cost_saved"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div>Self-Rating: <field name="self_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Cost Reduction">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick Applicable">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Contribution Details">
+                                                    <field name="name" string="Contribution" placeholder="What was your contribution?"/>
+                                                    <field name="cost_saved" string="Estimated Annual Saving"/>
+                                                    <field name="has_evidence" string="Evidence Attached" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="self_rating" string="Self-Rating (0-5)"/>
+                                                    <field name="manager_rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="F. Partnerships &amp; Institutional Contribution">
+                                    <field name="partnership_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'f'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="business_impact"/>
+                                            <field name="has_evidence"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Business Impact: <field name="business_impact"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Partnerships &amp; Institutional Contribution">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Contribution Details">
+                                                    <field name="name" string="Contribution" placeholder="What was your contribution?"/>
+                                                    <field name="business_impact" string="Business Impact"/>
+                                                    <field name="has_evidence" string="Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="Academic &amp; Student Contribution" name="academic_contribution">
+                                <group string="D. Student Success Contribution">
+                                    <field name="student_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'd'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="measurable_result"/>
+                                            <field name="has_evidence"/>
+                                            <field name="self_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Measurable Result: <field name="measurable_result"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div>Self-Rating: <field name="self_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Student Success Contribution">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick Applicable">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Contribution Details">
+                                                    <field name="name" string="Contribution" placeholder="What was your contribution?"/>
+                                                    <field name="measurable_result" string="Measurable Result"/>
+                                                    <field name="has_evidence" string="Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="self_rating" string="Self-Rating (0-5)"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="E. Placement Contribution">
+                                    <field name="placement_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'e'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="students_placed"/>
+                                            <field name="recruiters_added"/>
+                                            <field name="placement_drives"/>
+                                            <field name="has_evidence"/>
+                                            <field name="self_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Students Placed: <field name="students_placed"/> | Recruiters Added: <field name="recruiters_added"/></div>
+                                                        <div>Placement Drives Conducted: <field name="placement_drives"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div>Self-Rating: <field name="self_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Placement Contribution">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Details">
+                                                    <field name="name" string="Activity / Period" placeholder="e.g. Q1 Placement Drive"/>
+                                                    <field name="students_placed" string="Students Placed"/>
+                                                    <field name="recruiters_added" string="Recruiters Added"/>
+                                                    <field name="placement_drives" string="Placement Drives Conducted"/>
+                                                    <field name="highest_salary" string="Highest Salary"/>
+                                                    <field name="average_salary" string="Average Salary"/>
+                                                    <field name="has_evidence" string="Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="self_rating" string="Self-Rating (0-5)"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="P. Customer Retention">
+                                    <field name="retention_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'p'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="students_retained"/>
+                                            <field name="parents_convinced"/>
+                                            <field name="repeat_enrolments"/>
+                                            <field name="alumni_engagements"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Students Retained: <field name="students_retained"/></div>
+                                                        <div>Parents Convinced: <field name="parents_convinced"/></div>
+                                                        <div>Repeat Enrolments: <field name="repeat_enrolments"/></div>
+                                                        <div>Alumni Engagement: <field name="alumni_engagements"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Customer Retention">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <field name="name" string="Description" placeholder="What was your contribution?"/>
+                                                <group string="Activity">
+                                                    <field name="students_retained" string="Students Retained"/>
+                                                    <field name="parents_convinced" string="Parents Convinced"/>
+                                                    <field name="repeat_enrolments" string="Repeat Enrolments"/>
+                                                    <field name="alumni_engagements" string="Alumni Engagement"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="Marketing &amp; Brand" name="marketing_brand">
+                                <group string="C. Digital &amp; Marketing Contribution">
+                                    <field name="marketing_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'c'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="reach"/>
+                                            <field name="views"/>
+                                            <field name="leads_generated"/>
+                                            <field name="admissions_influenced"/>
+                                            <field name="has_evidence"/>
+                                            <field name="self_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Reach: <field name="reach"/> | Views: <field name="views"/></div>
+                                                        <div>Leads: <field name="leads_generated"/> | Admissions Influenced: <field name="admissions_influenced"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div>Self-Rating: <field name="self_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Digital &amp; Marketing Contribution">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick Applicable">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="KPI">
+                                                    <field name="name" string="Activity" placeholder="What was your contribution?"/>
+                                                    <field name="reach" string="Reach"/>
+                                                    <field name="views" string="Views"/>
+                                                    <field name="leads_generated" string="Leads Generated"/>
+                                                    <field name="admissions_influenced" string="Admissions Influenced"/>
+                                                    <field name="has_evidence" string="Supporting Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="self_rating" string="Self-Rating (0-5)"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="L. Brand Building">
+                                    <field name="brand_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'l'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="business_impact"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Impact: <field name="business_impact"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Brand Building">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Details">
+                                                    <field name="name" string="Activity" placeholder="What was your contribution?"/>
+                                                    <field name="business_impact" string="Impact"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="J. Student &amp; Parent Satisfaction">
+                                    <field name="satisfaction_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'j'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="has_evidence"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Student &amp; Parent Satisfaction">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Details">
+                                                    <field name="name" string="Description" placeholder="What was your contribution?"/>
+                                                    <field name="has_evidence" string="Attach Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="Q. Special Recognition">
+                                    <field name="recognition_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'q'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="has_evidence"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Special Recognition">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Details">
+                                                    <field name="name" string="Recognition Details" placeholder="What was your contribution?"/>
+                                                    <field name="has_evidence" string="Attach Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="Innovation &amp; Technology" name="innovation_technology">
+                                <group string="G. Innovation">
+                                    <field name="innovation_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'g'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="problem_identified"/>
+                                            <field name="business_impact"/>
+                                            <field name="cost_saved"/>
+                                            <field name="has_evidence"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Problem: <field name="problem_identified"/></div>
+                                                        <div>Business Impact: <field name="business_impact"/></div>
+                                                        <div>Cost Saved: <field name="cost_saved"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Innovation">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <div class="text-muted mb-2">Describe one innovative idea implemented during this quarter.</div>
+                                                <field name="name" string="Innovation Idea" placeholder="Short title for the idea"/>
+                                                <group string="Details">
+                                                    <field name="problem_identified" string="Problem Identified"/>
+                                                    <field name="action_taken" string="Solution Implemented"/>
+                                                    <field name="business_impact" string="Business Impact"/>
+                                                    <field name="time_saved" string="Time Saved"/>
+                                                    <field name="cost_saved" string="Cost Saved"/>
+                                                    <field name="has_evidence" string="Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="I. Process Improvement">
+                                    <field name="process_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'i'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="time_saved"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Time Saved: <field name="time_saved"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Process Improvement">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick Applicable">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Details">
+                                                    <field name="name" string="Improvement" placeholder="What was your contribution?"/>
+                                                    <field name="time_saved" string="Time Saved"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="N. AI &amp; Technology Adoption">
+                                    <field name="ai_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'n'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="contribution_type_ids"/>
+                                            <field name="efficiency_improvement"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Efficiency Improvement: <field name="efficiency_improvement"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="AI &amp; Technology Adoption">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Tick">
+                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                </group>
+                                                <group string="Details">
+                                                    <field name="name" string="Contribution" placeholder="What was your contribution?"/>
+                                                    <field name="efficiency_improvement" string="Efficiency Improvement"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="O. New Opportunities Identified">
+                                    <field name="opportunity_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'o'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="current_status"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Current Status: <field name="current_status"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="New Opportunities Identified">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Details">
+                                                    <field name="name" string="Opportunity" placeholder="Describe the opportunity"/>
+                                                    <field name="current_status" string="Current Status"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="Organization &amp; Team" name="organization_team">
+                                <group string="H. Cross Department Contribution">
+                                    <field name="crossdept_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'h'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="department_ids"/>
+                                            <field name="business_impact"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>
+                                                            <field name="department_ids" widget="many2many_tags"/>
+                                                        </div>
+                                                        <div>Business Impact: <field name="business_impact"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Cross Department Contribution">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <group string="Which departments benefited?">
+                                                    <field name="department_ids" nolabel="1" colspan="2" widget="many2many_checkboxes"/>
+                                                </group>
+                                                <group string="Contribution Details">
+                                                    <field name="name" string="Contribution" placeholder="What was your contribution?"/>
+                                                    <field name="business_impact" string="Business Impact"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="K. Team Development">
+                                    <field name="team_dev_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'k'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="internal_training_count"/>
+                                            <field name="staff_mentored_count"/>
+                                            <field name="faculty_training_count"/>
+                                            <field name="process_training_count"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Internal Training: <field name="internal_training_count"/></div>
+                                                        <div>Staff Mentored: <field name="staff_mentored_count"/></div>
+                                                        <div>Faculty Training: <field name="faculty_training_count"/></div>
+                                                        <div>Process Training: <field name="process_training_count"/></div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Team Development">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <field name="name" string="Description" placeholder="What was your contribution?"/>
+                                                <group string="Activity">
+                                                    <field name="internal_training_count" string="Internal Training"/>
+                                                    <field name="staff_mentored_count" string="Staff Mentored"/>
+                                                    <field name="faculty_training_count" string="Faculty Training"/>
+                                                    <field name="process_training_count" string="Process Training"/>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                                <group string="M. Risk Prevention">
+                                    <field name="risk_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'm'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="issue_prevented"/>
+                                            <field name="revenue_protected"/>
+                                            <field name="has_evidence"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Issue Prevented: <field name="issue_prevented"/></div>
+                                                        <div>Revenue Loss Prevented: <field name="revenue_protected"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Risk Prevention">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <div class="text-muted mb-2">Describe any issue prevented.</div>
+                                                <field name="name" string="Title" placeholder="Short title for this entry"/>
+                                                <group string="Details">
+                                                    <field name="issue_prevented" string="Issue Prevented"/>
+                                                    <field name="revenue_protected" string="Revenue Loss Prevented"/>
+                                                    <field name="estimated_business_impact" string="Estimated Value Saved"/>
+                                                    <field name="has_evidence" string="Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="Best Contribution" name="best_contribution">
+                                <group string="R. Best Contribution of the Quarter">
+                                    <field name="best_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'r'}">
+                                        <kanban>
+                                            <field name="section"/>
+                                            <field name="name"/>
+                                            <field name="problem_identified"/>
+                                            <field name="business_impact"/>
+                                            <field name="has_evidence"/>
+                                            <field name="manager_rating"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="oe_kanban_card oe_kanban_global_click p-2">
+                                                        <strong><field name="name"/></strong>
+                                                        <div>Problem: <field name="problem_identified"/></div>
+                                                        <div>Business Impact: <field name="business_impact"/></div>
+                                                        <div>
+                                                            Evidence:
+                                                            <span t-if="record.has_evidence.raw_value">Yes</span>
+                                                            <span t-else="">No</span>
+                                                        </div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Best Contribution of the Quarter">
+                                            <sheet>
+                                                <field name="section" invisible="1"/>
+                                                <div class="text-muted mb-2">Describe your single biggest contribution.</div>
+                                                <field name="name" string="Biggest Contribution" placeholder="Short title"/>
+                                                <group string="Details">
+                                                    <field name="problem_identified" string="Problem"/>
+                                                    <field name="action_taken" string="Action Taken"/>
+                                                    <field name="result_achieved" string="Result"/>
+                                                    <field name="business_impact" string="Business Impact"/>
+                                                    <field name="has_evidence" string="Evidence" widget="boolean_toggle"/>
+                                                    <field name="evidence_ids" nolabel="1" colspan="2" invisible="not has_evidence">
+                                                        <list editable="bottom">
+                                                            <field name="evidence_type_id"/>
+                                                            <field name="name"/>
+                                                            <field name="attachment" filename="attachment_filename" widget="binary"/>
+                                                            <field name="attachment_filename" column_invisible="1"/>
+                                                        </list>
+                                                    </field>
+                                                    <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <page string="KPI Summary" name="kpi_summary">
+                                <group string="Calculated (from Contributions)">
+                                    <group>
+                                        <field name="kpi_revenue_generated"/>
+                                        <field name="kpi_revenue_protected"/>
+                                        <field name="kpi_cost_saved"/>
+                                        <field name="kpi_admissions_influenced"/>
+                                        <field name="kpi_leads_generated"/>
+                                    </group>
+                                    <group>
+                                        <field name="kpi_campaign_reach"/>
+                                        <field name="kpi_campaign_views"/>
+                                        <field name="kpi_students_placed"/>
+                                        <field name="kpi_recruiters_added"/>
+                                        <field name="kpi_students_retained"/>
+                                        <field name="kpi_partnership_count"/>
+                                        <field name="kpi_ai_initiative_count"/>
+                                        <field name="kpi_process_improvement_count"/>
+                                    </group>
+                                </group>
+                                <group string="Manual Entry" groups="staff_contribution_evaluation.group_contribution_manager">
+                                    <group>
+                                        <field name="kpi_achievement"/>
+                                        <field name="kpi_student_satisfaction"/>
+                                        <field name="kpi_google_reviews"/>
+                                    </group>
+                                    <group>
+                                        <field name="kpi_manual_notes" nolabel="1" placeholder="Source / basis for the manually entered KPI values..."/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Manager Evaluation" name="manager_evaluation" groups="staff_contribution_evaluation.group_contribution_manager">
+                                <div class="mb-2">
+                                    <button name="action_load_scorecard" string="Load Scorecard" type="object" class="btn-secondary" invisible="score_line_ids"/>
+                                </div>
+                                <field name="score_line_ids">
+                                    <list editable="bottom">
+                                        <field name="criteria_id" readonly="1"/>
+                                        <field name="weight" readonly="1" string="Weight (%)"/>
+                                        <field name="score" string="Score (0-100)"/>
+                                        <field name="weighted_score" readonly="1" sum="Total"/>
+                                    </list>
+                                </field>
+                                <group class="mt-3">
+                                    <group>
+                                        <field name="total_weight" readonly="1"/>
+                                        <field name="final_score" readonly="1"/>
+                                        <field name="overall_rating" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Remarks &amp; Approval" name="remarks_approval">
+                                <group>
+                                    <field name="employee_remarks" placeholder="Employee remarks..."/>
+                                    <field name="manager_remarks" placeholder="Reporting Manager remarks..." groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                    <field name="hr_remarks" placeholder="HR remarks..." groups="staff_contribution_evaluation.group_contribution_hr"/>
+                                    <field name="director_remarks" placeholder="Director remarks..." groups="staff_contribution_evaluation.group_contribution_director"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ===================== Pivot / Graph (Reporting) ===================== -->
+        <record id="view_staff_contribution_evaluation_pivot" model="ir.ui.view">
+            <field name="name">staff.contribution.evaluation.pivot</field>
+            <field name="model">staff.contribution.evaluation</field>
+            <field name="arch" type="xml">
+                <pivot string="Contribution Evaluation Analysis">
+                    <field name="department_id" type="row"/>
+                    <field name="quarter" type="col"/>
+                    <field name="final_score" type="measure"/>
+                    <field name="kpi_revenue_generated" type="measure"/>
+                    <field name="kpi_cost_saved" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_staff_contribution_evaluation_graph" model="ir.ui.view">
+            <field name="name">staff.contribution.evaluation.graph</field>
+            <field name="model">staff.contribution.evaluation</field>
+            <field name="arch" type="xml">
+                <graph string="Contribution Evaluation Analysis" type="bar">
+                    <field name="department_id"/>
+                    <field name="final_score" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- ===================== Actions ===================== -->
+        <record id="action_staff_contribution_evaluation_all" model="ir.actions.act_window">
+            <field name="name">All Evaluations</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,kanban,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_staff_contribution_evaluation_my" model="ir.actions.act_window">
+            <field name="name">My Evaluations</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{'search_default_my_evaluations': 1}</field>
+        </record>
+
+        <record id="action_staff_contribution_evaluation_team" model="ir.actions.act_window">
+            <field name="name">Team Evaluations</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,kanban,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{'search_default_my_team': 1}</field>
+        </record>
+
+        <record id="action_staff_contribution_evaluation_manager_review" model="ir.actions.act_window">
+            <field name="name">Manager Review</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{'search_default_state_manager': 1}</field>
+        </record>
+
+        <record id="action_staff_contribution_evaluation_hr_review" model="ir.actions.act_window">
+            <field name="name">HR Review</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{'search_default_state_hr': 1}</field>
+        </record>
+
+        <record id="action_staff_contribution_evaluation_director_review" model="ir.actions.act_window">
+            <field name="name">Director Review</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{'search_default_state_director': 1}</field>
+        </record>
+
+        <record id="action_staff_contribution_evaluation_approved" model="ir.actions.act_window">
+            <field name="name">Approved Evaluations</field>
+            <field name="res_model">staff.contribution.evaluation</field>
+            <field name="view_mode">list,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_staff_contribution_evaluation_search"/>
+            <field name="context">{'search_default_state_approved': 1}</field>
+        </record>
+
+    </data>
+</odoo>
