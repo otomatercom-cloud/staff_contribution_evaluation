@@ -146,7 +146,7 @@
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="revenue_generated"/>
                                             <field name="estimated_business_impact"/>
                                             <field name="has_evidence"/>
@@ -154,10 +154,8 @@
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
-                                                        <strong><field name="name"/></strong>
-                                                        <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
-                                                        </div>
+                                                        <strong><field name="contribution_type_id"/></strong>
+                                                        <div><field name="name"/></div>
                                                         <div>Revenue Generated: <field name="revenue_generated"/></div>
                                                         <div>Estimated Business Impact: <field name="estimated_business_impact"/></div>
                                                         <div>
@@ -174,7 +172,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick Applicable Contribution">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Contribution Details">
                                                     <field name="name" string="Activity" placeholder="What was your contribution?"/>
@@ -190,12 +188,13 @@
                                                         </list>
                                                     </field>
                                                     <field name="self_rating" string="Self-Rating (0-5)"/>
-                                                    <field name="manager_rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="manager_rating" string="Manager Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_manager"/>
                                                 </group>
                                             </sheet>
                                         </form>
                                     </field>
                                 </group>
+                                <p class="text-muted small">Applies to one contribution type per entry — tick the type, fill in its details, then click "Add" again to log another type separately.</p>
                                 <group string="B. Cost Reduction">
                                     <field name="cost_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'b'}">
                                         <kanban>

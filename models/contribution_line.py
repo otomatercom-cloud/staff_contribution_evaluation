@@ -37,6 +37,11 @@ class StaffContributionLine(models.Model):
         'line_id', 'contribution_type_id', string='Contribution Type(s)',
         domain="[('section', '=', section)]",
         help="Tick all contribution types that apply to this entry.")
+    contribution_type_id = fields.Many2one(
+        'staff.contribution.type', string='Contribution Type',
+        domain="[('section', '=', section)]",
+        help="Single contribution type for this entry (used by sections "
+             "where each ticked type gets its own independent details).")
     name = fields.Char(
         string='Title', required=True,
         help="Short title of the contribution / activity.")
@@ -170,7 +175,7 @@ class StaffContributionLine(models.Model):
                 raise ValidationError(
                     self.env._("Manager rating must be between 0 and 5."))
 
-    @api.constrains('section', 'contribution_type_ids')
+    @api.constrains('section', 'contribution_type_ids', 'contribution_type_id')
     def _check_type_section(self):
         for line in self:
             mismatched = line.contribution_type_ids.filtered(
@@ -180,6 +185,13 @@ class StaffContributionLine(models.Model):
                     self.env._("The contribution type(s) %s do not belong "
                                "to section '%s'.",
                                ', '.join(mismatched.mapped('name')),
+                               dict(SECTION_SELECTION).get(line.section)))
+            if (line.contribution_type_id
+                    and line.contribution_type_id.section != line.section):
+                raise ValidationError(
+                    self.env._("The contribution type '%s' does not belong "
+                               "to section '%s'.",
+                               line.contribution_type_id.name,
                                dict(SECTION_SELECTION).get(line.section)))
 
     @api.onchange('evidence_ids')
@@ -191,6 +203,9 @@ class StaffContributionLine(models.Model):
     def _onchange_section(self):
         self.contribution_type_ids = self.contribution_type_ids.filtered(
             lambda t: t.section == self.section)
+        if (self.contribution_type_id
+                and self.contribution_type_id.section != self.section):
+            self.contribution_type_id = False
 
     # ------------------------------------------------------------------
     # Server side protection of manager ratings
