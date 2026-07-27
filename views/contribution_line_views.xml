@@ -17,6 +17,7 @@
                     <field name="business_impact" optional="hide"/>
                     <field name="self_rating" optional="show"/>
                     <field name="manager_rating" optional="show"/>
+                    <field name="hr_rating" optional="show"/>
                     <field name="evidence_count" string="Evidence" optional="show"/>
                 </list>
             </field>
@@ -36,6 +37,7 @@
                     <field name="estimated_business_impact"/>
                     <field name="self_rating"/>
                     <field name="manager_rating"/>
+                    <field name="hr_rating"/>
                     <field name="evidence_count" string="Evidence"/>
                 </list>
             </field>
@@ -53,6 +55,7 @@
                     <field name="cost_saved" string="Estimated Annual Saving"/>
                     <field name="self_rating"/>
                     <field name="manager_rating"/>
+                    <field name="hr_rating"/>
                     <field name="evidence_count" string="Evidence"/>
                 </list>
             </field>
@@ -73,6 +76,7 @@
                     <field name="admissions_influenced"/>
                     <field name="self_rating"/>
                     <field name="manager_rating"/>
+                    <field name="hr_rating"/>
                     <field name="evidence_count" string="Evidence"/>
                 </list>
             </field>
@@ -93,6 +97,7 @@
                     <field name="average_salary"/>
                     <field name="self_rating"/>
                     <field name="manager_rating"/>
+                    <field name="hr_rating"/>
                     <field name="evidence_count" string="Evidence"/>
                 </list>
             </field>
@@ -109,6 +114,7 @@
                     <field name="department_ids" widget="many2many_tags"/>
                     <field name="business_impact"/>
                     <field name="manager_rating"/>
+                    <field name="hr_rating"/>
                     <field name="evidence_count" string="Evidence"/>
                 </list>
             </field>
@@ -125,6 +131,7 @@
                     <field name="name"/>
                     <field name="business_impact" optional="show"/>
                     <field name="manager_rating"/>
+                    <field name="hr_rating"/>
                     <field name="evidence_count" string="Evidence"/>
                 </list>
             </field>
@@ -146,6 +153,7 @@
                             <group>
                                 <field name="self_rating" invisible="not has_self_rating"/>
                                 <field name="manager_rating"/>
+                                <field name="hr_rating"/>
                                 <field name="has_self_rating" invisible="1"/>
                             </group>
                         </group>

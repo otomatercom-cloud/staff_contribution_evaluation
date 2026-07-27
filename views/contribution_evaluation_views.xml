@@ -189,6 +189,7 @@
                                                     </field>
                                                     <field name="self_rating" string="Self-Rating (0-5)"/>
                                                     <field name="manager_rating" string="Manager Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -242,6 +243,7 @@
                                                     </field>
                                                     <field name="self_rating" string="Self-Rating (0-5)"/>
                                                     <field name="manager_rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -256,6 +258,7 @@
                                             <field name="business_impact"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -270,6 +273,7 @@
                                                             <span t-else="">No</span>
                                                         </div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -293,6 +297,7 @@
                                                         </list>
                                                     </field>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -348,6 +353,7 @@
                                                     </field>
                                                     <field name="self_rating" string="Self-Rating (0-5)"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -400,6 +406,7 @@
                                                     </field>
                                                     <field name="self_rating" string="Self-Rating (0-5)"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -415,6 +422,7 @@
                                             <field name="repeat_enrolments"/>
                                             <field name="alumni_engagements"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -424,6 +432,7 @@
                                                         <div>Repeat Enrolments: <field name="repeat_enrolments"/></div>
                                                         <div>Alumni Engagement: <field name="alumni_engagements"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -438,6 +447,7 @@
                                                     <field name="repeat_enrolments" string="Repeat Enrolments"/>
                                                     <field name="alumni_engagements" string="Alumni Engagement"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -500,6 +510,7 @@
                                                     </field>
                                                     <field name="self_rating" string="Self-Rating (0-5)"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -513,6 +524,7 @@
                                             <field name="contribution_type_ids"/>
                                             <field name="business_impact"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -522,6 +534,7 @@
                                                         </div>
                                                         <div>Impact: <field name="business_impact"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -536,6 +549,7 @@
                                                     <field name="name" string="Activity" placeholder="What was your contribution?"/>
                                                     <field name="business_impact" string="Impact"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -549,6 +563,7 @@
                                             <field name="contribution_type_ids"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -562,6 +577,7 @@
                                                             <span t-else="">No</span>
                                                         </div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -584,6 +600,7 @@
                                                         </list>
                                                     </field>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -597,6 +614,7 @@
                                             <field name="contribution_type_ids"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -610,6 +628,7 @@
                                                             <span t-else="">No</span>
                                                         </div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -632,6 +651,7 @@
                                                         </list>
                                                     </field>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -650,6 +670,7 @@
                                             <field name="cost_saved"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -663,6 +684,7 @@
                                                             <span t-else="">No</span>
                                                         </div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -688,6 +710,7 @@
                                                         </list>
                                                     </field>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -701,6 +724,7 @@
                                             <field name="contribution_type_ids"/>
                                             <field name="time_saved"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -710,6 +734,7 @@
                                                         </div>
                                                         <div>Time Saved: <field name="time_saved"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -724,6 +749,7 @@
                                                     <field name="name" string="Improvement" placeholder="What was your contribution?"/>
                                                     <field name="time_saved" string="Time Saved"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -737,6 +763,7 @@
                                             <field name="contribution_type_ids"/>
                                             <field name="efficiency_improvement"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -746,6 +773,7 @@
                                                         </div>
                                                         <div>Efficiency Improvement: <field name="efficiency_improvement"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -760,6 +788,7 @@
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
                                                     <field name="efficiency_improvement" string="Efficiency Improvement"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -772,12 +801,14 @@
                                             <field name="name"/>
                                             <field name="current_status"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>Current Status: <field name="current_status"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -789,6 +820,7 @@
                                                     <field name="name" string="Opportunity" placeholder="Describe the opportunity"/>
                                                     <field name="current_status" string="Current Status"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -805,6 +837,7 @@
                                             <field name="department_ids"/>
                                             <field name="business_impact"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -814,6 +847,7 @@
                                                         </div>
                                                         <div>Business Impact: <field name="business_impact"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -828,6 +862,7 @@
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
                                                     <field name="business_impact" string="Business Impact"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -843,6 +878,7 @@
                                             <field name="faculty_training_count"/>
                                             <field name="process_training_count"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -852,6 +888,7 @@
                                                         <div>Faculty Training: <field name="faculty_training_count"/></div>
                                                         <div>Process Training: <field name="process_training_count"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -866,6 +903,7 @@
                                                     <field name="faculty_training_count" string="Faculty Training"/>
                                                     <field name="process_training_count" string="Process Training"/>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -880,6 +918,7 @@
                                             <field name="revenue_protected"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -892,6 +931,7 @@
                                                             <span t-else="">No</span>
                                                         </div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -915,6 +955,7 @@
                                                         </list>
                                                     </field>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>
@@ -932,6 +973,7 @@
                                             <field name="business_impact"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
+                                            <field name="hr_rating"/>
                                             <templates>
                                                 <t t-name="card">
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
@@ -944,6 +986,7 @@
                                                             <span t-else="">No</span>
                                                         </div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
+                                                        <div groups="staff_contribution_evaluation.group_contribution_hr">HR Rating: <field name="hr_rating"/>/5</div>
                                                     </div>
                                                 </t>
                                             </templates>
@@ -968,6 +1011,7 @@
                                                         </list>
                                                     </field>
                                                     <field name="manager_rating" string="Manager Rating" groups="staff_contribution_evaluation.group_contribution_manager"/>
+                                                    <field name="hr_rating" string="HR Rating (0-5)" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                                 </group>
                                             </sheet>
                                         </form>

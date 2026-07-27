@@ -137,6 +137,10 @@ class StaffContributionLine(models.Model):
     manager_rating = fields.Integer(
         string='Manager Rating (0-5)', tracking=False,
         help="Reporting Manager rating on a 0 to 5 scale.")
+    hr_rating = fields.Integer(
+        string='HR Rating (0-5)', tracking=False,
+        help="HR rating on a 0 to 5 scale, entered independently of the "
+             "Reporting Manager's rating.")
     has_self_rating = fields.Boolean(
         compute='_compute_has_self_rating',
         help="Technical: whether this section carries a self rating.")
@@ -165,7 +169,7 @@ class StaffContributionLine(models.Model):
         for line in self:
             line.evidence_count = len(line.evidence_ids)
 
-    @api.constrains('self_rating', 'manager_rating')
+    @api.constrains('self_rating', 'manager_rating', 'hr_rating')
     def _check_ratings(self):
         for line in self:
             if line.self_rating < 0 or line.self_rating > 5:
@@ -174,6 +178,9 @@ class StaffContributionLine(models.Model):
             if line.manager_rating < 0 or line.manager_rating > 5:
                 raise ValidationError(
                     self.env._("Manager rating must be between 0 and 5."))
+            if line.hr_rating < 0 or line.hr_rating > 5:
+                raise ValidationError(
+                    self.env._("HR rating must be between 0 and 5."))
 
     @api.constrains('section', 'contribution_type_ids', 'contribution_type_id')
     def _check_type_section(self):
@@ -218,15 +225,25 @@ class StaffContributionLine(models.Model):
                 self.env._("Only the Reporting Manager (or above) can enter "
                            "manager ratings."))
 
+    def _check_hr_rating_access(self, vals):
+        """Only HR-level users may set / change HR ratings."""
+        if 'hr_rating' in vals and not self.env.user.has_group(
+                'staff_contribution_evaluation.group_contribution_hr'):
+            raise UserError(
+                self.env._("Only HR (or above) can enter HR ratings."))
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('manager_rating'):
                 self._check_manager_rating_access(vals)
+            if vals.get('hr_rating'):
+                self._check_hr_rating_access(vals)
         return super().create(vals_list)
 
     def write(self, vals):
         self._check_manager_rating_access(vals)
+        self._check_hr_rating_access(vals)
         for line in self:
             line.evaluation_id._check_editable()
         return super().write(vals)
