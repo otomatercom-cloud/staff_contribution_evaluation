@@ -142,6 +142,7 @@
                         <notebook>
                             <page string="Business Contribution" name="business_contribution">
                                 <group string="A. Revenue Contribution">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'a'}"/>
                                     <field name="revenue_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'a'}">
                                         <kanban>
                                             <field name="section"/>
@@ -197,11 +198,12 @@
                                 </group>
                                 <p class="text-muted small">Applies to one contribution type per entry — tick the type, fill in its details, then click "Add" again to log another type separately.</p>
                                 <group string="B. Cost Reduction">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'b'}"/>
                                     <field name="cost_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'b'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="cost_saved"/>
                                             <field name="has_evidence"/>
                                             <field name="self_rating"/>
@@ -210,7 +212,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Estimated Annual Saving: <field name="cost_saved"/></div>
                                                         <div>
@@ -227,7 +229,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick Applicable">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Contribution Details">
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
@@ -250,11 +252,12 @@
                                     </field>
                                 </group>
                                 <group string="F. Partnerships &amp; Institutional Contribution">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'f'}"/>
                                     <field name="partnership_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'f'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="business_impact"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
@@ -264,7 +267,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Business Impact: <field name="business_impact"/></div>
                                                         <div>
@@ -282,7 +285,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Contribution Details">
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
@@ -307,11 +310,12 @@
 
                             <page string="Academic &amp; Student Contribution" name="academic_contribution">
                                 <group string="D. Student Success Contribution">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'd'}"/>
                                     <field name="student_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'd'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="measurable_result"/>
                                             <field name="has_evidence"/>
                                             <field name="self_rating"/>
@@ -320,7 +324,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Measurable Result: <field name="measurable_result"/></div>
                                                         <div>
@@ -337,7 +341,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick Applicable">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Contribution Details">
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
@@ -457,11 +461,12 @@
 
                             <page string="Marketing &amp; Brand" name="marketing_brand">
                                 <group string="C. Digital &amp; Marketing Contribution">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'c'}"/>
                                     <field name="marketing_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'c'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="reach"/>
                                             <field name="views"/>
                                             <field name="leads_generated"/>
@@ -473,7 +478,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Reach: <field name="reach"/> | Views: <field name="views"/></div>
                                                         <div>Leads: <field name="leads_generated"/> | Admissions Influenced: <field name="admissions_influenced"/></div>
@@ -491,7 +496,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick Applicable">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="KPI">
                                                     <field name="name" string="Activity" placeholder="What was your contribution?"/>
@@ -517,11 +522,12 @@
                                     </field>
                                 </group>
                                 <group string="L. Brand Building">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'l'}"/>
                                     <field name="brand_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'l'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="business_impact"/>
                                             <field name="manager_rating"/>
                                             <field name="hr_rating"/>
@@ -530,7 +536,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Impact: <field name="business_impact"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
@@ -543,7 +549,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Details">
                                                     <field name="name" string="Activity" placeholder="What was your contribution?"/>
@@ -556,11 +562,12 @@
                                     </field>
                                 </group>
                                 <group string="J. Student &amp; Parent Satisfaction">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'j'}"/>
                                     <field name="satisfaction_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'j'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
                                             <field name="hr_rating"/>
@@ -569,7 +576,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>
                                                             Evidence:
@@ -586,7 +593,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Details">
                                                     <field name="name" string="Description" placeholder="What was your contribution?"/>
@@ -607,11 +614,12 @@
                                     </field>
                                 </group>
                                 <group string="Q. Special Recognition">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'q'}"/>
                                     <field name="recognition_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'q'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="has_evidence"/>
                                             <field name="manager_rating"/>
                                             <field name="hr_rating"/>
@@ -620,7 +628,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>
                                                             Evidence:
@@ -637,7 +645,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Details">
                                                     <field name="name" string="Recognition Details" placeholder="What was your contribution?"/>
@@ -717,11 +725,12 @@
                                     </field>
                                 </group>
                                 <group string="I. Process Improvement">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'i'}"/>
                                     <field name="process_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'i'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="time_saved"/>
                                             <field name="manager_rating"/>
                                             <field name="hr_rating"/>
@@ -730,7 +739,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Time Saved: <field name="time_saved"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
@@ -743,7 +752,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick Applicable">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Details">
                                                     <field name="name" string="Improvement" placeholder="What was your contribution?"/>
@@ -756,11 +765,12 @@
                                     </field>
                                 </group>
                                 <group string="N. AI &amp; Technology Adoption">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'n'}"/>
                                     <field name="ai_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'n'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="contribution_type_ids"/>
+                                            <field name="contribution_type_id"/>
                                             <field name="efficiency_improvement"/>
                                             <field name="manager_rating"/>
                                             <field name="hr_rating"/>
@@ -769,7 +779,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="contribution_type_ids" widget="many2many_tags"/>
+                                                            <field name="contribution_type_id"/>
                                                         </div>
                                                         <div>Efficiency Improvement: <field name="efficiency_improvement"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
@@ -782,7 +792,7 @@
                                             <sheet>
                                                 <field name="section" invisible="1"/>
                                                 <group string="Tick">
-                                                    <field name="contribution_type_ids" nolabel="1" colspan="2" widget="many2many_checkboxes" domain="[('section', '=', section)]"/>
+                                                    <field name="contribution_type_id" nolabel="1" colspan="2" widget="radio" domain="[('section', '=', section)]"/>
                                                 </group>
                                                 <group string="Details">
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
@@ -830,11 +840,12 @@
 
                             <page string="Organization &amp; Team" name="organization_team">
                                 <group string="H. Cross Department Contribution">
+                                    <button name="action_quick_add" type="object" string="Tick Multiple (Quick Add)" class="btn-secondary mb-2" context="{'quick_add_section': 'h'}"/>
                                     <field name="crossdept_line_ids" nolabel="1" context="{'default_evaluation_id': id, 'default_section': 'h'}">
                                         <kanban>
                                             <field name="section"/>
                                             <field name="name"/>
-                                            <field name="department_ids"/>
+                                            <field name="department_id"/>
                                             <field name="business_impact"/>
                                             <field name="manager_rating"/>
                                             <field name="hr_rating"/>
@@ -843,7 +854,7 @@
                                                     <div class="oe_kanban_card oe_kanban_global_click p-2">
                                                         <strong><field name="name"/></strong>
                                                         <div>
-                                                            <field name="department_ids" widget="many2many_tags"/>
+                                                            <field name="department_id"/>
                                                         </div>
                                                         <div>Business Impact: <field name="business_impact"/></div>
                                                         <div groups="staff_contribution_evaluation.group_contribution_manager">Manager Rating: <field name="manager_rating"/>/5</div>
@@ -855,8 +866,8 @@
                                         <form string="Cross Department Contribution">
                                             <sheet>
                                                 <field name="section" invisible="1"/>
-                                                <group string="Which departments benefited?">
-                                                    <field name="department_ids" nolabel="1" colspan="2" widget="many2many_checkboxes"/>
+                                                <group string="Which department benefited?">
+                                                    <field name="department_id" nolabel="1" colspan="2" widget="radio"/>
                                                 </group>
                                                 <group string="Contribution Details">
                                                     <field name="name" string="Contribution" placeholder="What was your contribution?"/>
@@ -1054,18 +1065,48 @@
                             <page string="Manager Evaluation" name="manager_evaluation" groups="staff_contribution_evaluation.group_contribution_manager">
                                 <div class="mb-2">
                                     <button name="action_load_scorecard" string="Load Scorecard" type="object" class="btn-secondary" invisible="score_line_ids"/>
+                                    <button name="action_apply_auto_manager_scores" string="Auto-Calculate Manager Scores" type="object" class="btn-secondary" invisible="not score_line_ids"/>
+                                    <button name="action_apply_auto_hr_scores" string="Auto-Calculate HR Scores" type="object" class="btn-secondary" invisible="not score_line_ids" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                 </div>
                                 <field name="score_line_ids">
                                     <list editable="bottom">
                                         <field name="criteria_id" readonly="1"/>
                                         <field name="weight" readonly="1" string="Weight (%)"/>
-                                        <field name="score" string="Score (0-100)"/>
-                                        <field name="weighted_score" readonly="1" sum="Total"/>
+                                        <field name="auto_score" readonly="1" string="Auto (Mgr)"/>
+                                        <field name="score" string="Manager Score (0-100)"/>
+                                        <field name="weighted_score" readonly="1" sum="Total" string="Mgr Weighted"/>
+                                        <field name="auto_hr_score" readonly="1" string="Auto (HR)" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                                        <field name="hr_score" string="HR Score (0-100)" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                                        <field name="hr_weighted_score" readonly="1" sum="Total" string="HR Weighted" groups="staff_contribution_evaluation.group_contribution_hr"/>
                                     </list>
                                 </field>
+                                <p class="text-muted small mt-1">
+                                    "Auto" columns show what the score would be based on the Manager/HR Ratings of contributions mapped to each criterion (Configuration &gt; Evaluation Criteria). Click "Auto-Calculate" to apply them, or type a score manually.
+                                </p>
                                 <group class="mt-3">
                                     <group>
                                         <field name="total_weight" readonly="1"/>
+                                        <field name="scorecard_score" readonly="1"/>
+                                        <field name="hr_scorecard_score" readonly="1" groups="staff_contribution_evaluation.group_contribution_hr"/>
+                                    </group>
+                                </group>
+
+                                <group string="Consolidated Marks (from every individual contribution — informational)" class="mt-3">
+                                    <group>
+                                        <field name="consolidated_manager_marks_sum" readonly="1"/>
+                                        <field name="consolidated_manager_marks_avg" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="consolidated_hr_marks_sum" readonly="1"/>
+                                        <field name="consolidated_hr_marks_avg" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="consolidated_marks_weight"/>
+                                    </group>
+                                </group>
+
+                                <group class="mt-3">
+                                    <group>
                                         <field name="final_score" readonly="1"/>
                                         <field name="overall_rating" readonly="1"/>
                                     </group>

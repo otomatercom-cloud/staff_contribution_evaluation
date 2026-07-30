@@ -76,6 +76,25 @@ class StaffEvaluationCriteria(models.Model):
     description = fields.Text(
         help="Explain to managers what this criterion measures and how the "
              "0-100 score should be assigned.")
+    mapped_sections = fields.Char(
+        string='Auto-Calculate From Sections',
+        help="Comma-separated contribution section codes (e.g. \"a,b,f\") "
+             "whose entries feed this criterion's auto-calculated score, "
+             "based on the average Manager/HR Rating (0-5) of contributions "
+             "in those sections, scaled to 0-100. Leave blank to enter this "
+             "criterion's score manually with no auto-suggestion. Section "
+             "codes: a=Revenue, b=Cost Reduction, c=Digital & Marketing, "
+             "d=Student Success, e=Placement, f=Partnerships, g=Innovation, "
+             "h=Cross Department, i=Process Improvement, j=Satisfaction, "
+             "k=Team Development, l=Brand Building, m=Risk Prevention, "
+             "n=AI & Technology, o=Opportunities, p=Retention, "
+             "q=Recognition, r=Best Contribution.")
+
+    def _get_mapped_section_codes(self):
+        self.ensure_one()
+        if not self.mapped_sections:
+            return []
+        return [c.strip() for c in self.mapped_sections.split(',') if c.strip()]
 
     @api.constrains('weight')
     def _check_weight(self):

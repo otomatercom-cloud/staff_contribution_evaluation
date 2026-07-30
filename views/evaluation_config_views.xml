@@ -51,6 +51,7 @@
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="weight" string="Weight (%)" sum="Total"/>
+                    <field name="mapped_sections" string="Auto-Calc Sections"/>
                     <field name="active" widget="boolean_toggle"/>
                 </list>
             </field>
@@ -67,6 +68,7 @@
                             <field name="weight"/>
                             <field name="sequence"/>
                             <field name="active"/>
+                            <field name="mapped_sections" placeholder="e.g. a,b,f"/>
                         </group>
                         <field name="description" placeholder="Explain how managers should score this criterion (0-100)..."/>
                     </sheet>

@@ -127,6 +127,11 @@ class StaffContributionLine(models.Model):
     department_ids = fields.Many2many(
         'hr.department', 'staff_contribution_line_department_rel',
         'line_id', 'department_id', string='Departments Benefited')
+    department_id = fields.Many2one(
+        'hr.department', string='Department Benefited',
+        help="Single department for this entry (used by the Cross "
+             "Department section where each ticked department gets its "
+             "own independent entry).")
 
     # ------------------------------------------------------------------
     # Ratings

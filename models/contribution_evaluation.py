@@ -54,11 +54,30 @@ class StaffEvaluationScore(models.Model):
         help="Weight snapshot taken from the criteria configuration when "
              "the scorecard was generated.")
     score = fields.Float(
-        string='Score (0-100)',
-        help="Manager score for this criterion on a 0-100 scale.")
+        string='Manager Score (0-100)',
+        help="Manager score for this criterion on a 0-100 scale. Can be "
+             "entered manually or set via 'Auto-Calculate from Contributions'.")
     weighted_score = fields.Float(
         string='Weighted Score', compute='_compute_weighted_score',
         store=True, help="Score x Weight / 100")
+    hr_score = fields.Float(
+        string='HR Score (0-100)',
+        help="HR score for this criterion on a 0-100 scale, entered "
+             "independently of the Manager score. Can be entered manually "
+             "or set via 'Auto-Calculate from Contributions'.")
+    hr_weighted_score = fields.Float(
+        string='HR Weighted Score', compute='_compute_hr_weighted_score',
+        store=True, help="HR Score x Weight / 100")
+    auto_score = fields.Float(
+        string='Auto Score (Manager)', compute='_compute_auto_scores',
+        help="What the Manager Score would be if calculated automatically "
+             "from the Manager Rating of contributions in this criterion's "
+             "mapped sections. Not saved to Score until applied.")
+    auto_hr_score = fields.Float(
+        string='Auto Score (HR)', compute='_compute_auto_scores',
+        help="What the HR Score would be if calculated automatically from "
+             "the HR Rating of contributions in this criterion's mapped "
+             "sections. Not saved to HR Score until applied.")
     company_id = fields.Many2one(
         related='evaluation_id.company_id', store=True, index=True)
 
@@ -72,12 +91,45 @@ class StaffEvaluationScore(models.Model):
         for line in self:
             line.weighted_score = line.score * line.weight / 100.0
 
+    @api.depends('hr_score', 'weight')
+    def _compute_hr_weighted_score(self):
+        for line in self:
+            line.hr_weighted_score = line.hr_score * line.weight / 100.0
+
+    @api.depends('criteria_id.mapped_sections',
+                 'evaluation_id.line_ids.section',
+                 'evaluation_id.line_ids.manager_rating',
+                 'evaluation_id.line_ids.hr_rating')
+    def _compute_auto_scores(self):
+        for line in self:
+            codes = line.criteria_id._get_mapped_section_codes()
+            mapped_lines = line.evaluation_id.line_ids.filtered(
+                lambda l, codes=codes: l.section in codes) if codes else (
+                    line.evaluation_id.line_ids.browse())
+            if mapped_lines:
+                count = len(mapped_lines)
+                line.auto_score = (
+                    sum(mapped_lines.mapped('manager_rating')) / count * 20)
+                line.auto_hr_score = (
+                    sum(mapped_lines.mapped('hr_rating')) / count * 20)
+            else:
+                line.auto_score = 0.0
+                line.auto_hr_score = 0.0
+
     @api.constrains('score')
     def _check_score(self):
         for line in self:
             if line.score < 0 or line.score > 100:
                 raise ValidationError(
                     self.env._("Scorecard scores must be between 0 and 100."))
+
+    @api.constrains('hr_score')
+    def _check_hr_score(self):
+        for line in self:
+            if line.hr_score < 0 or line.hr_score > 100:
+                raise ValidationError(
+                    self.env._("Scorecard HR scores must be between 0 and "
+                               "100."))
 
     @api.constrains('weight')
     def _check_weight(self):
@@ -86,6 +138,22 @@ class StaffEvaluationScore(models.Model):
                 raise ValidationError(
                     self.env._("Scorecard weights must be between 0 and "
                                "100."))
+
+    def write(self, vals):
+        if 'hr_score' in vals and not self.env.user.has_group(
+                'staff_contribution_evaluation.group_contribution_hr'):
+            raise UserError(
+                self.env._("Only HR (or above) can enter the HR Score."))
+        return super().write(vals)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('hr_score') and not self.env.user.has_group(
+                    'staff_contribution_evaluation.group_contribution_hr'):
+                raise UserError(
+                    self.env._("Only HR (or above) can enter the HR Score."))
+        return super().create(vals_list)
 
 
 class StaffContributionEvaluation(models.Model):
@@ -283,12 +351,54 @@ class StaffContributionEvaluation(models.Model):
         'staff.evaluation.score', 'evaluation_id', string='Scorecard')
     total_weight = fields.Float(
         compute='_compute_final_score', string='Total Weight (%)')
+    scorecard_score = fields.Float(
+        string='Manager Scorecard Score', compute='_compute_final_score',
+        store=True,
+        help="Weighted score from the Manager Evaluation Scorecard's "
+             "Manager Score column (0-100).")
+    hr_scorecard_score = fields.Float(
+        string='HR Scorecard Score', compute='_compute_final_score',
+        store=True,
+        help="Weighted score from the Manager Evaluation Scorecard's HR "
+             "Score column (0-100).")
     final_score = fields.Float(
         string='Final Score', compute='_compute_final_score', store=True,
         tracking=True, aggregator='avg')
     overall_rating = fields.Selection(
         RATING_SELECTION, string='Overall Performance Rating',
         compute='_compute_overall_rating', store=True, tracking=True)
+
+    # ------------------------------------------------------------------
+    # Consolidated per-contribution Manager / HR marks (informational —
+    # a quick overview of raw ratings; the Final Score itself is driven by
+    # the weighted Manager/HR Scorecard columns above).
+    # ------------------------------------------------------------------
+    consolidated_manager_marks_sum = fields.Integer(
+        string='Manager Marks (Sum)', compute='_compute_consolidated_marks',
+        store=True,
+        help="Sum of the Manager Rating (0-5) entered on every individual "
+             "contribution across all sections. Informational only.")
+    consolidated_manager_marks_avg = fields.Float(
+        string='Manager Marks (Average)', compute='_compute_consolidated_marks',
+        store=True,
+        help="Average of the Manager Rating (0-5) across every individual "
+             "contribution across all sections. Informational only.")
+    consolidated_hr_marks_sum = fields.Integer(
+        string='HR Marks (Sum)', compute='_compute_consolidated_marks',
+        store=True,
+        help="Sum of the HR Rating (0-5) entered on every individual "
+             "contribution across all sections. Informational only.")
+    consolidated_hr_marks_avg = fields.Float(
+        string='HR Marks (Average)', compute='_compute_consolidated_marks',
+        store=True,
+        help="Average of the HR Rating (0-5) across every individual "
+             "contribution across all sections. Informational only.")
+    consolidated_marks_weight = fields.Float(
+        string='HR Scorecard Weight (%)', default=30.0,
+        help="What percentage of the Final Score comes from the HR "
+             "Scorecard Score. The remaining percentage comes from the "
+             "Manager Scorecard Score. E.g. 30 means Final Score = Manager "
+             "Scorecard Score x 70% + HR Scorecard Score x 30%.")
 
     # ------------------------------------------------------------------
     # Remarks
@@ -366,19 +476,41 @@ class StaffContributionEvaluation(models.Model):
             evaluation.kpi_process_improvement_count = len(
                 lines.filtered(lambda l: l.section == 'i'))
 
-    @api.depends('score_line_ids.weighted_score', 'score_line_ids.weight')
+    @api.depends('line_ids.manager_rating', 'line_ids.hr_rating')
+    def _compute_consolidated_marks(self):
+        for evaluation in self:
+            lines = evaluation.line_ids
+            count = len(lines)
+            manager_sum = sum(lines.mapped('manager_rating'))
+            hr_sum = sum(lines.mapped('hr_rating'))
+            evaluation.consolidated_manager_marks_sum = manager_sum
+            evaluation.consolidated_hr_marks_sum = hr_sum
+            evaluation.consolidated_manager_marks_avg = (
+                manager_sum / count if count else 0.0)
+            evaluation.consolidated_hr_marks_avg = (
+                hr_sum / count if count else 0.0)
+
+    @api.depends('score_line_ids.weighted_score', 'score_line_ids.weight',
+                 'score_line_ids.hr_weighted_score', 'consolidated_marks_weight')
     def _compute_final_score(self):
         for evaluation in self:
             evaluation.total_weight = sum(
                 evaluation.score_line_ids.mapped('weight'))
-            evaluation.final_score = sum(
+            evaluation.scorecard_score = sum(
                 evaluation.score_line_ids.mapped('weighted_score'))
+            evaluation.hr_scorecard_score = sum(
+                evaluation.score_line_ids.mapped('hr_weighted_score'))
+            hr_share = max(
+                0.0, min(100.0, evaluation.consolidated_marks_weight)) / 100.0
+            evaluation.final_score = (
+                evaluation.scorecard_score * (1 - hr_share)
+                + evaluation.hr_scorecard_score * hr_share)
 
     @api.depends('final_score')
     def _compute_overall_rating(self):
         for evaluation in self:
             score = evaluation.final_score
-            if not evaluation.score_line_ids:
+            if not evaluation.score_line_ids and not evaluation.line_ids:
                 evaluation.overall_rating = False
             elif score >= 90:
                 evaluation.overall_rating = 'outstanding'
@@ -447,6 +579,15 @@ class StaffContributionEvaluation(models.Model):
                     self.env._("The evaluation period start date must be "
                                "before the end date."))
 
+    @api.constrains('consolidated_marks_weight')
+    def _check_consolidated_marks_weight(self):
+        for evaluation in self:
+            if (evaluation.consolidated_marks_weight < 0
+                    or evaluation.consolidated_marks_weight > 100):
+                raise ValidationError(
+                    self.env._("Consolidated Marks Weight must be between "
+                               "0 and 100."))
+
     # ==================================================================
     # CRUD / server side security
     # ==================================================================
@@ -492,7 +633,8 @@ class StaffContributionEvaluation(models.Model):
         # Manual KPI values and scorecard-related header data are for
         # manager level and above.
         protected = {'kpi_achievement', 'kpi_student_satisfaction',
-                     'kpi_google_reviews', 'kpi_manual_notes'}
+                     'kpi_google_reviews', 'kpi_manual_notes',
+                     'consolidated_marks_weight'}
         if protected & set(vals) and not self.env.user.has_group(
                 'staff_contribution_evaluation.group_contribution_manager'):
             raise UserError(
@@ -530,6 +672,30 @@ class StaffContributionEvaluation(models.Model):
             ]
             if lines:
                 self.env['staff.evaluation.score'].create(lines)
+        return True
+
+    def action_apply_auto_manager_scores(self):
+        """Copy each scorecard line's auto-calculated Manager Score into
+        the actual Score field, for criteria that have mapped sections
+        configured. Criteria left unmapped are skipped so any
+        manually-entered score there is preserved."""
+        for evaluation in self:
+            for score_line in evaluation.score_line_ids:
+                if not score_line.criteria_id._get_mapped_section_codes():
+                    continue
+                score_line.write({'score': score_line.auto_score})
+        return True
+
+    def action_apply_auto_hr_scores(self):
+        """Copy each scorecard line's auto-calculated HR Score into the
+        actual HR Score field, for criteria that have mapped sections
+        configured. Criteria left unmapped are skipped so any
+        manually-entered score there is preserved."""
+        for evaluation in self:
+            for score_line in evaluation.score_line_ids:
+                if not score_line.criteria_id._get_mapped_section_codes():
+                    continue
+                score_line.write({'hr_score': score_line.auto_hr_score})
         return True
 
     # ==================================================================
@@ -746,6 +912,35 @@ class StaffContributionEvaluation(models.Model):
             'view_mode': 'list,form',
             'domain': [('evaluation_id', '=', self.id)],
             'context': {'default_evaluation_id': self.id},
+        }
+
+    def action_quick_add(self):
+        """Open the tick-multiple quick-add wizard for the section passed
+        via the calling button's context (quick_add_section)."""
+        self.ensure_one()
+        section = self.env.context.get('quick_add_section')
+        if not section:
+            raise UserError(self.env._("No section specified."))
+        if section == 'h':
+            departments = self.env['hr.department'].search(
+                [('company_id', '=', self.company_id.id)])
+            row_vals = [(0, 0, {'department_id': d.id}) for d in departments]
+        else:
+            types = self.env['staff.contribution.type'].search(
+                [('section', '=', section)])
+            row_vals = [(0, 0, {'contribution_type_id': t.id}) for t in types]
+        wizard = self.env['staff.contribution.quick.entry.wizard'].create({
+            'evaluation_id': self.id,
+            'section': section,
+            'line_ids': row_vals,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Quick Add — Tick Multiple'),
+            'res_model': 'staff.contribution.quick.entry.wizard',
+            'view_mode': 'form',
+            'res_id': wizard.id,
+            'target': 'new',
         }
 
     # ==================================================================

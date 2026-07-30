@@ -80,7 +80,7 @@
                 <h3>Manager Evaluation Scorecard</h3>
                 <table class="table table-sm table-bordered">
                     <thead>
-                        <tr><th>Criteria</th><th>Weight (%)</th><th>Score (0-100)</th><th>Weighted Score</th></tr>
+                        <tr><th>Criteria</th><th>Weight (%)</th><th>Manager Score</th><th>Mgr Weighted</th><th>HR Score</th><th>HR Weighted</th></tr>
                     </thead>
                     <tbody>
                         <tr t-foreach="o.score_line_ids" t-as="score">
@@ -88,9 +88,28 @@
                             <td><span t-field="score.weight"/></td>
                             <td><span t-field="score.score"/></td>
                             <td><span t-field="score.weighted_score"/></td>
+                            <td><span t-field="score.hr_score"/></td>
+                            <td><span t-field="score.hr_weighted_score"/></td>
                         </tr>
                     </tbody>
                 </table>
+
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td><strong>Manager Scorecard Score:</strong> <span t-field="o.scorecard_score"/></td>
+                        <td><strong>HR Scorecard Score:</strong> <span t-field="o.hr_scorecard_score"/></td>
+                        <td><strong>HR Weight:</strong> <span t-field="o.consolidated_marks_weight"/>%</td>
+                    </tr>
+                </table>
+
+                <h3>Consolidated Marks (from every individual contribution — informational)</h3>
+                <table class="table table-sm table-bordered">
+                    <tr><td>Manager Marks — Sum</td><td><span t-field="o.consolidated_manager_marks_sum"/></td>
+                        <td>Manager Marks — Average</td><td><span t-field="o.consolidated_manager_marks_avg"/></td></tr>
+                    <tr><td>HR Marks — Sum</td><td><span t-field="o.consolidated_hr_marks_sum"/></td>
+                        <td>HR Marks — Average</td><td><span t-field="o.consolidated_hr_marks_avg"/></td></tr>
+                </table>
+
                 <table class="table table-sm table-borderless">
                     <tr>
                         <td><strong>Final Score:</strong> <span t-field="o.final_score"/></td>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_staff_contribution_quick_entry_wizard_form" model="ir.ui.view">
+            <field name="name">staff.contribution.quick.entry.wizard.form</field>
+            <field name="model">staff.contribution.quick.entry.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Quick Add Contributions">
+                    <field name="evaluation_id" invisible="1"/>
+                    <field name="section" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <p class="text-muted">
+                        Tick the rows that apply and fill in each row's details directly.
+                        Only ticked rows are added — each becomes its own contribution entry with its own values.
+                    </p>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="include" widget="boolean_toggle"/>
+                            <field name="contribution_type_id" readonly="1" column_invisible="parent.section == 'h'"/>
+                            <field name="department_id" readonly="1" column_invisible="parent.section != 'h'"/>
+                            <field name="name" string="Activity"/>
+                            <field name="revenue_generated" column_invisible="parent.section != 'a'"/>
+                            <field name="estimated_business_impact" column_invisible="parent.section != 'a'"/>
+                            <field name="cost_saved" column_invisible="parent.section != 'b'" string="Estimated Annual Saving"/>
+                            <field name="reach" column_invisible="parent.section != 'c'"/>
+                            <field name="views" column_invisible="parent.section != 'c'"/>
+                            <field name="leads_generated" column_invisible="parent.section != 'c'"/>
+                            <field name="admissions_influenced" column_invisible="parent.section != 'c'"/>
+                            <field name="measurable_result" column_invisible="parent.section != 'd'"/>
+                            <field name="business_impact" column_invisible="parent.section not in ('f', 'l', 'h')"/>
+                            <field name="time_saved" column_invisible="parent.section not in ('i',)"/>
+                            <field name="efficiency_improvement" column_invisible="parent.section != 'n'"/>
+                            <field name="self_rating" column_invisible="parent.section not in ('a', 'b', 'c', 'd')"/>
+                            <field name="has_evidence" widget="boolean_toggle" column_invisible="parent.section not in ('a', 'b', 'c', 'd', 'f', 'j', 'q')"/>
+                        </list>
+                    </field>
+                    <p class="text-muted small mt-2">
+                        Evidence files can be attached afterward by opening the created entry from its section.
+                    </p>
+                    <footer>
+                        <button name="action_confirm" type="object" string="Confirm" class="btn-primary"/>
+                        <button string="Cancel" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

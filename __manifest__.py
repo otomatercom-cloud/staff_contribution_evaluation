@@ -41,6 +41,7 @@ Digitally manages the Quarterly Significant Contribution Evaluation process:
         # Views
         'views/evaluation_config_views.xml',
         'views/contribution_line_views.xml',
+        'views/quick_entry_wizard_views.xml',
         'views/contribution_evaluation_views.xml',
         'views/reporting_views.xml',
         # Reports

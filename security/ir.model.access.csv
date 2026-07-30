@@ -28,3 +28,6 @@ access_staff_contribution_evidence_director,staff.contribution.evidence.director
 access_staff_evaluation_score_manager,staff.evaluation.score.manager,model_staff_evaluation_score,group_contribution_manager,1,1,1,1
 access_staff_evaluation_score_hr,staff.evaluation.score.hr,model_staff_evaluation_score,group_contribution_hr,1,1,1,1
 access_staff_evaluation_score_director,staff.evaluation.score.director,model_staff_evaluation_score,group_contribution_director,1,0,0,0
+
+access_staff_contribution_quick_entry_wizard_user,staff.contribution.quick.entry.wizard.user,model_staff_contribution_quick_entry_wizard,group_contribution_user,1,1,1,1
+access_staff_contribution_quick_entry_line_user,staff.contribution.quick.entry.line.user,model_staff_contribution_quick_entry_line,group_contribution_user,1,1,1,1
