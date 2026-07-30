@@ -55,4 +55,9 @@ Digitally manages the Quarterly Significant Contribution Evaluation process:
     'installable': True,
     'application': True,
     'auto_install': False,
+    'assets': {
+        'web.assets_frontend': [
+            'staff_contribution_evaluation/static/src/css/portal_style.css',
+        ],
+    },
 }

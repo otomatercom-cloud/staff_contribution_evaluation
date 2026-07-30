@@ -1,0 +1,300 @@
+/* Staff Contribution Evaluation — Portal Design System
+   Palette: deep navy (institutional trust) + teal/gold/rose/slate/coral
+   category accents so the 18 sections read as organized, not random. */
+
+.o_portal_contribution_evaluation {
+    --sce-navy: #1b2a4a;
+    --sce-navy-light: #2a3f68;
+    --sce-teal: #0f7173;
+    --sce-gold: #e3a008;
+    --sce-rose: #c2255c;
+    --sce-slate: #495464;
+    --sce-coral: #e8590c;
+    --sce-bg: #f4f6f9;
+    --sce-card: #ffffff;
+    --sce-border: #e2e6ed;
+    --sce-text: #1f2937;
+    --sce-text-muted: #6b7280;
+
+    font-family: -apple-system, "Segoe UI", ui-sans-serif, system-ui, Roboto, sans-serif;
+    color: var(--sce-text);
+    background: var(--sce-bg);
+    padding: 8px 4px 40px;
+}
+
+/* ---------- Header banner ---------- */
+.sce-header-banner {
+    background: linear-gradient(120deg, var(--sce-navy) 0%, var(--sce-navy-light) 100%);
+    border-radius: 16px;
+    padding: 28px 32px;
+    color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(27, 42, 74, 0.18);
+}
+
+.sce-header-banner .sce-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 4px;
+}
+
+.sce-header-banner h2 {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+}
+
+.sce-header-banner .sce-sub {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.95rem;
+}
+
+.sce-status-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.sce-status-pill.status-draft { background: rgba(255, 255, 255, 0.16); }
+.sce-status-pill.status-approved { background: var(--sce-teal); border-color: var(--sce-teal); }
+.sce-status-pill.status-rejected { background: var(--sce-coral); border-color: var(--sce-coral); }
+.sce-status-pill.status-review { background: var(--sce-gold); border-color: var(--sce-gold); color: #1f2937; }
+
+/* ---------- Progress navigator (signature element) ---------- */
+.sce-progress-nav {
+    background: var(--sce-card);
+    border: 1px solid var(--sce-border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
+}
+
+.sce-progress-nav .sce-progress-label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--sce-text-muted);
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+}
+
+.sce-progress-track {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sce-nav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid var(--pill-color, var(--sce-slate));
+    color: var(--pill-color, var(--sce-slate));
+    background: color-mix(in srgb, var(--pill-color, var(--sce-slate)) 8%, white);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.sce-nav-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(16, 24, 40, 0.12);
+    color: var(--pill-color, var(--sce-slate));
+}
+
+.sce-nav-pill .sce-nav-count {
+    background: var(--pill-color, var(--sce-slate));
+    color: #fff;
+    border-radius: 999px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    padding: 0 5px;
+}
+
+.sce-nav-pill.sce-nav-empty {
+    opacity: 0.55;
+}
+
+/* ---------- Instruction panel ---------- */
+.sce-howto {
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fff9ec 0%, #fff 60%);
+    border-left: 5px solid var(--sce-gold);
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
+}
+
+.sce-howto .alert-heading {
+    color: var(--sce-navy);
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+.sce-howto ol {
+    color: var(--sce-text);
+    font-size: 0.92rem;
+}
+
+/* ---------- Accordion / sections ---------- */
+.sce-accordion .accordion-item {
+    border: 1px solid var(--sce-border);
+    border-left: 5px solid var(--cat-color, var(--sce-slate));
+    border-radius: 12px !important;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.04);
+}
+
+.sce-accordion .accordion-button {
+    font-weight: 700;
+    color: var(--sce-navy);
+    background: var(--sce-card);
+    padding: 16px 20px;
+}
+
+.sce-accordion .accordion-button:not(.collapsed) {
+    background: color-mix(in srgb, var(--cat-color, var(--sce-slate)) 7%, white);
+    color: var(--cat-color, var(--sce-navy));
+    box-shadow: none;
+}
+
+.sce-accordion .accordion-button::after {
+    filter: none;
+}
+
+.sce-accordion .accordion-body {
+    background: #fbfcfe;
+    padding: 20px;
+}
+
+.sce-cat-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--cat-color, var(--sce-slate));
+    color: #fff;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* ---------- Contribution cards ---------- */
+.sce-entry-card {
+    border: 1px solid var(--sce-border);
+    border-top: 3px solid var(--cat-color, var(--sce-slate));
+    border-radius: 12px;
+    background: var(--sce-card);
+    transition: box-shadow 0.15s ease;
+}
+
+.sce-entry-card:hover {
+    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+}
+
+.sce-entry-card .card-title {
+    color: var(--sce-navy);
+    font-weight: 700;
+    font-size: 0.98rem;
+}
+
+/* ---------- Row-table (tick-and-fill) ---------- */
+.sce-tick-table thead th {
+    background: var(--sce-bg);
+    color: var(--sce-navy);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom: 2px solid var(--sce-border);
+    white-space: nowrap;
+}
+
+.sce-tick-table tbody tr:hover {
+    background: color-mix(in srgb, var(--cat-color, var(--sce-slate)) 5%, white);
+}
+
+.sce-tick-table td {
+    vertical-align: middle;
+}
+
+/* ---------- Buttons ---------- */
+.o_portal_contribution_evaluation .btn-primary {
+    background: var(--sce-navy);
+    border-color: var(--sce-navy);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 8px 20px;
+}
+
+.o_portal_contribution_evaluation .btn-primary:hover {
+    background: var(--sce-navy-light);
+    border-color: var(--sce-navy-light);
+}
+
+.o_portal_contribution_evaluation .btn-success {
+    background: var(--sce-teal);
+    border-color: var(--sce-teal);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 8px 20px;
+}
+
+.o_portal_contribution_evaluation .btn-outline-danger {
+    border-radius: 8px;
+}
+
+/* ---------- Remarks card ---------- */
+.sce-remarks-card {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(16, 24, 40, 0.06);
+}
+
+.sce-remarks-card .card-header {
+    background: var(--sce-navy);
+    color: #fff;
+    border-radius: 14px 14px 0 0 !important;
+    font-weight: 700;
+}
+
+/* ---------- List page ---------- */
+.sce-list-table thead {
+    background: var(--sce-navy);
+}
+
+.sce-list-table thead th {
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    padding: 12px 16px;
+}
+
+.sce-list-table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+.sce-list-table tbody tr {
+    border-bottom: 1px solid var(--sce-border);
+}

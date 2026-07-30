@@ -4,61 +4,71 @@
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="False"/>
 
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <h2 class="mb-0">Quarterly Contribution Evaluations</h2>
-                <t t-if="employee">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEvaluationModal">
-                        <i class="fa fa-plus me-1"/>New Evaluation
-                    </button>
-                </t>
-            </div>
-
-            <t t-if="not employee">
-                <div class="alert alert-warning">
-                    No employee record is linked to your account. Please contact HR.
+            <div class="o_portal_contribution_evaluation">
+                <div class="sce-header-banner d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <div class="sce-eyebrow">Staff Contribution Evaluation</div>
+                        <h2 class="mb-0">Quarterly Contribution Evaluations</h2>
+                        <div class="sce-sub">Track and submit your quarterly contributions across all sections.</div>
+                    </div>
+                    <t t-if="employee">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEvaluationModal">
+                            <i class="fa fa-plus me-1"/>New Evaluation
+                        </button>
+                    </t>
                 </div>
-            </t>
 
-            <t t-elif="not evaluations">
-                <p class="text-muted">You have no contribution evaluations yet. Click "New Evaluation" to get started.</p>
-            </t>
+                <t t-if="not employee">
+                    <div class="alert alert-warning">
+                        No employee record is linked to your account. Please contact HR.
+                    </div>
+                </t>
 
-            <table t-if="evaluations" class="table table-hover">
-                <thead>
-                    <tr class="active">
-                        <th>Evaluation No.</th>
-                        <th>Quarter</th>
-                        <th>Status</th>
-                        <th>Final Score</th>
-                        <th>Overall Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr t-foreach="evaluations" t-as="evaluation">
-                        <td>
-                            <a t-attf-href="/my/contribution-evaluations/#{evaluation.id}">
-                                <span t-esc="evaluation.name"/>
-                            </a>
-                        </td>
-                        <td>
-                            <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
-                        </td>
-                        <td>
-                            <span class="badge text-bg-info" t-esc="evaluation.state"/>
-                        </td>
-                        <td>
-                            <t t-if="evaluation.score_line_ids">
-                                <span t-esc="'%.1f' % evaluation.final_score"/>
-                            </t>
-                            <t t-else="">—</t>
-                        </td>
-                        <td>
-                            <span t-if="evaluation.overall_rating" t-esc="evaluation.overall_rating"/>
-                            <t t-else="">—</t>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <t t-elif="not evaluations">
+                    <div class="sce-howto">
+                        <p class="mb-0">You have no contribution evaluations yet. Click <strong>"New Evaluation"</strong> to get started.</p>
+                    </div>
+                </t>
+
+                <div t-if="evaluations" class="table-responsive">
+                    <table class="table table-hover sce-list-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Evaluation No.</th>
+                                <th>Quarter</th>
+                                <th>Status</th>
+                                <th>Final Score</th>
+                                <th>Overall Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="evaluations" t-as="evaluation">
+                                <td>
+                                    <a t-attf-href="/my/contribution-evaluations/#{evaluation.id}" class="fw-bold text-decoration-none">
+                                        <span t-esc="evaluation.name"/>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+                                </td>
+                                <td>
+                                    <span t-attf-class="sce-status-pill status-#{evaluation.state}" t-esc="evaluation.state"/>
+                                </td>
+                                <td>
+                                    <t t-if="evaluation.score_line_ids">
+                                        <span class="fw-bold" t-esc="'%.1f' % evaluation.final_score"/>
+                                    </t>
+                                    <t t-else="">—</t>
+                                </td>
+                                <td>
+                                    <span t-if="evaluation.overall_rating" t-esc="evaluation.overall_rating"/>
+                                    <t t-else="">—</t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <div class="modal fade" id="newEvaluationModal" tabindex="-1">
                 <div class="modal-dialog">
@@ -97,58 +107,78 @@
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="False"/>
 
-            <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
-                <div>
-                    <h2 class="mb-0"><span t-esc="evaluation.name"/></h2>
-                    <div class="text-muted">
-                        <span t-esc="evaluation.employee_id.name"/> —
-                        <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+            <div class="o_portal_contribution_evaluation">
+                <div class="sce-header-banner d-flex justify-content-between align-items-start flex-wrap gap-3">
+                    <div>
+                        <div class="sce-eyebrow">Quarterly Contribution Evaluation</div>
+                        <h2 class="mb-1"><span t-esc="evaluation.name"/></h2>
+                        <div class="sce-sub">
+                            <span t-esc="evaluation.employee_id.name"/> ·
+                            <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span t-attf-class="sce-status-pill status-#{evaluation.state}" t-esc="evaluation.state"/>
+                        <t t-if="evaluation.state == 'draft'">
+                            <form t-attf-action="/my/contribution-evaluations/#{evaluation.id}/submit" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-success ms-2">Submit for Review</button>
+                            </form>
+                        </t>
                     </div>
                 </div>
-                <div class="text-end">
-                    <span class="badge text-bg-secondary fs-6 align-middle" t-esc="evaluation.state"/>
-                    <t t-if="evaluation.state == 'draft'">
-                        <form t-attf-action="/my/contribution-evaluations/#{evaluation.id}/submit" method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <button type="submit" class="btn btn-success ms-2">Submit for Review</button>
-                        </form>
-                    </t>
-                </div>
-            </div>
 
-            <div class="alert alert-info">
-                <h5 class="alert-heading"><i class="fa fa-info-circle me-1"/>How to fill this form</h5>
-                <ol class="mb-0 ps-3">
-                    <li>Open each section below (click its title to expand).</li>
-                    <li>
-                        For sections with a tick-list (e.g. Revenue Contribution, Cost Reduction): each row is one
-                        contribution type. Tick <strong>Include</strong> for every type that applies this quarter,
-                        fill in that row's own Activity/amount/rating — each ticked row is saved as its own separate
-                        entry, so multiple types stay clearly distinct. Then click <strong>Add Selected</strong>.
-                    </li>
-                    <li>
-                        For sections without a tick-list (e.g. Placement, Innovation, Best Contribution): fill in the
-                        single form shown and click <strong>Add Entry</strong>.
-                    </li>
-                    <li>Repeat for every section that applies to you — you can leave sections empty if nothing applies.</li>
-                    <li>
-                        Evidence: tick "Evidence" on a row to reveal a file upload right there — attach it before
+                <div class="sce-progress-nav">
+                    <div class="sce-progress-label">
+                        <span t-esc="len([s for s in sections_data if s['cards']])"/> of <span t-esc="len(sections_data)"/> sections have entries — jump to a section:
+                    </div>
+                    <div class="sce-progress-track">
+                        <t t-foreach="sections_data" t-as="nav_s">
+                            <a t-attf-href="#section-#{nav_s['code']}"
+                               t-attf-class="sce-nav-pill #{'sce-nav-empty' if not nav_s['cards'] else ''}"
+                               t-attf-style="--pill-color: #{nav_s['cat_color']};"
+                               t-attf-title="#{nav_s['cfg']['title']}">
+                                <span t-esc="nav_s['code'].upper()"/>
+                                <span class="sce-nav-count" t-esc="len(nav_s['cards'])"/>
+                            </a>
+                        </t>
+                    </div>
+                </div>
+
+                <div class="sce-howto">
+                    <h5 class="alert-heading"><i class="fa fa-info-circle me-1"/>How to fill this form</h5>
+                    <ol class="mb-0 ps-3">
+                        <li>Open each section below (click its title to expand), or jump to one using the colored pills above.</li>
+                        <li>
+                            For sections with a tick-list (e.g. Revenue Contribution, Cost Reduction): each row is one
+                            contribution type. Tick <strong>Include</strong> for every type that applies this quarter,
+                            fill in that row's own Activity/amount/rating — each ticked row is saved as its own separate
+                            entry, so multiple types stay clearly distinct. Then click <strong>Add Selected</strong>.
+                        </li>
+                        <li>
+                            For sections without a tick-list (e.g. Placement, Innovation, Best Contribution): fill in the
+                            single form shown and click <strong>Add Entry</strong>.
+                        </li>
+                        <li>Repeat for every section that applies to you — you can leave sections empty if nothing applies.</li>
+                        <li>
+                            Evidence: tick "Evidence" on a row to reveal a file upload right there — attach it before
                         clicking Add Selected.
                     </li>
                     <li>Add an optional note in <strong>Employee Remarks</strong> at the bottom, then click <strong>Submit for Review</strong> when everything is entered.</li>
                 </ol>
             </div>
 
-            <div class="accordion" id="sectionsAccordion">
+            <div class="accordion sce-accordion" id="sectionsAccordion">
                 <t t-foreach="sections_data" t-as="sdata">
                     <t t-set="cfg" t-value="sdata['cfg']"/>
                     <t t-set="sec_code" t-value="sdata['code']"/>
                     <t t-set="is_row_section" t-value="cfg.get('has_types') or cfg.get('has_departments')"/>
-                    <div class="accordion-item" t-attf-id="section-#{sec_code}">
+                    <div class="accordion-item" t-attf-id="section-#{sec_code}" t-attf-style="--cat-color: #{sdata['cat_color']};">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button"
                                     data-bs-toggle="collapse" t-attf-data-bs-target="#collapse-#{sec_code}">
                                 <span t-esc="cfg['title']"/>
+                                <span class="sce-cat-badge" t-esc="sdata['category']"/>
                                 <span class="badge text-bg-light border ms-2" t-esc="len(sdata['cards'])"/>
                             </button>
                         </h2>
@@ -162,7 +192,7 @@
                                 <div t-if="sdata['cards']" class="row row-cols-1 row-cols-md-2 g-3 mb-4">
                                     <t t-foreach="sdata['cards']" t-as="card">
                                         <div class="col">
-                                            <div class="card h-100 shadow-sm">
+                                            <div class="sce-entry-card h-100" t-attf-style="--cat-color: #{sdata['cat_color']};">
                                                 <div class="card-body">
                                                     <h6 class="card-title" t-esc="card['title']"/>
                                                     <div t-if="cfg.get('has_types')" class="small mb-1">
@@ -202,7 +232,7 @@
                                       method="post" enctype="multipart/form-data" class="border rounded p-3 bg-light">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <div class="table-responsive">
-                                        <table class="table table-sm align-middle mb-2">
+                                        <table class="table table-sm align-middle mb-2 sce-tick-table">
                                             <thead>
                                                 <tr>
                                                     <th>Include</th>
@@ -321,8 +351,8 @@
                 </t>
             </div>
 
-            <div class="card mt-4">
-                <div class="card-header fw-bold">Employee Remarks</div>
+            <div class="card mt-4 sce-remarks-card">
+                <div class="card-header">Employee Remarks</div>
                 <div class="card-body">
                     <form t-if="evaluation.state == 'draft'"
                           t-attf-action="/my/contribution-evaluations/#{evaluation.id}/save-remarks" method="post">
@@ -332,6 +362,7 @@
                     </form>
                     <p t-else="" t-esc="evaluation.employee_remarks or 'No remarks.'"/>
                 </div>
+            </div>
             </div>
         </t>
     </template>

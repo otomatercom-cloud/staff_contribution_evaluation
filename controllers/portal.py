@@ -190,6 +190,25 @@ SECTION_FORM_CONFIG = {
 SECTION_ORDER = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
                   'm', 'n', 'o', 'p', 'q', 'r']
 
+# Groups sections into themed categories purely for portal color-coding —
+# each category maps to a CSS custom property defined in portal_style.css.
+SECTION_CATEGORY = {
+    'a': 'business', 'b': 'business', 'f': 'business',
+    'd': 'academic', 'e': 'academic', 'p': 'academic',
+    'c': 'marketing', 'l': 'marketing', 'j': 'marketing', 'q': 'marketing',
+    'g': 'innovation', 'i': 'innovation', 'n': 'innovation', 'o': 'innovation',
+    'h': 'org', 'k': 'org', 'm': 'org',
+    'r': 'highlight',
+}
+CATEGORY_COLOR_VAR = {
+    'business': 'var(--sce-navy)',
+    'academic': 'var(--sce-teal)',
+    'marketing': 'var(--sce-rose)',
+    'innovation': 'var(--sce-gold)',
+    'org': 'var(--sce-slate)',
+    'highlight': 'var(--sce-coral)',
+}
+
 
 class ContributionEvaluationPortal(CustomerPortal):
 
@@ -257,6 +276,9 @@ class ContributionEvaluationPortal(CustomerPortal):
                 'cards': cards,
                 'items': items,
                 'item_kind': item_kind,
+                'category': SECTION_CATEGORY.get(code, 'org'),
+                'cat_color': CATEGORY_COLOR_VAR.get(
+                    SECTION_CATEGORY.get(code, 'org'), 'var(--sce-slate)'),
             })
         return sections_data
 
