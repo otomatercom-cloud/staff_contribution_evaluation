@@ -6,10 +6,13 @@
 
             <div class="o_portal_contribution_evaluation">
                 <div class="sce-header-banner d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <div>
-                        <div class="sce-eyebrow">Staff Contribution Evaluation</div>
-                        <h2 class="mb-0">Quarterly Contribution Evaluations</h2>
-                        <div class="sce-sub">Track and submit your quarterly contributions across all sections.</div>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="/staff_contribution_evaluation/static/src/img/logo.png" alt="Logic School of Management" class="sce-header-logo"/>
+                        <div>
+                            <div class="sce-eyebrow">Staff Contribution Evaluation</div>
+                            <h2 class="mb-0">Quarterly Contribution Evaluations</h2>
+                            <div class="sce-sub">Track and submit your quarterly contributions across all sections.</div>
+                        </div>
                     </div>
                     <t t-if="employee">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEvaluationModal">
@@ -109,12 +112,15 @@
 
             <div class="o_portal_contribution_evaluation">
                 <div class="sce-header-banner d-flex justify-content-between align-items-start flex-wrap gap-3">
-                    <div>
-                        <div class="sce-eyebrow">Quarterly Contribution Evaluation</div>
-                        <h2 class="mb-1"><span t-esc="evaluation.name"/></h2>
-                        <div class="sce-sub">
-                            <span t-esc="evaluation.employee_id.name"/> ·
-                            <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="/staff_contribution_evaluation/static/src/img/logo.png" alt="Logic School of Management" class="sce-header-logo"/>
+                        <div>
+                            <div class="sce-eyebrow">Quarterly Contribution Evaluation</div>
+                            <h2 class="mb-1"><span t-esc="evaluation.name"/></h2>
+                            <div class="sce-sub">
+                                <span t-esc="evaluation.employee_id.name"/> ·
+                                <span t-esc="evaluation.quarter"/> <span t-esc="evaluation.evaluation_year"/>
+                            </div>
                         </div>
                     </div>
                     <div class="text-end">

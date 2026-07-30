@@ -3,13 +3,19 @@
    category accents so the 18 sections read as organized, not random. */
 
 .o_portal_contribution_evaluation {
-    --sce-navy: #1b2a4a;
-    --sce-navy-light: #2a3f68;
-    --sce-teal: #0f7173;
-    --sce-gold: #e3a008;
-    --sce-rose: #c2255c;
+    /* Brand: Logic School of Management green + gold */
+    --sce-navy: #11522c;
+    --sce-navy-light: #4c7d60;
+    --sce-gold: #c9a227;
+    --sce-gold-bright: #eee627;
+
+    /* Category accents — kept visually distinct from the brand green/gold
+       and from each other, since their job is to differentiate sections. */
+    --sce-teal: #1d6f8c;
+    --sce-rose: #a8355c;
     --sce-slate: #495464;
-    --sce-coral: #e8590c;
+    --sce-coral: #c2660c;
+
     --sce-bg: #f4f6f9;
     --sce-card: #ffffff;
     --sce-border: #e2e6ed;
@@ -29,7 +35,17 @@
     padding: 28px 32px;
     color: #fff;
     margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(27, 42, 74, 0.18);
+    box-shadow: 0 8px 24px rgba(17, 82, 44, 0.22);
+    border-bottom: 4px solid var(--sce-gold-bright);
+}
+
+.sce-header-logo {
+    height: 48px;
+    width: auto;
+    border-radius: 8px;
+    background: #fff;
+    padding: 4px 8px;
+    margin-right: 4px;
 }
 
 .sce-header-banner .sce-eyebrow {
