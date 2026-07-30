@@ -241,16 +241,22 @@ class ContributionEvaluationPortal(CustomerPortal):
                     'title': line.name,
                     'details': detail_values,
                 })
-            types = (
-                request.env['staff.contribution.type'].sudo().search(
+            items = request.env['staff.contribution.type']
+            item_kind = None
+            if cfg.get('has_types'):
+                items = request.env['staff.contribution.type'].sudo().search(
                     [('section', '=', code)])
-                if cfg.get('has_types') else request.env['staff.contribution.type']
-            )
+                item_kind = 'type'
+            elif cfg.get('has_departments'):
+                items = request.env['hr.department'].sudo().search(
+                    [('company_id', '=', evaluation.company_id.id)])
+                item_kind = 'department'
             sections_data.append({
                 'code': code,
                 'cfg': cfg,
                 'cards': cards,
-                'types': types,
+                'items': items,
+                'item_kind': item_kind,
             })
         return sections_data
 
@@ -291,26 +297,25 @@ class ContributionEvaluationPortal(CustomerPortal):
                 auth='user', website=True)
     def portal_evaluation_form(self, evaluation_id, **kw):
         evaluation = self._get_own_evaluation(evaluation_id)
-        departments = request.env['hr.department'].sudo().search(
-            [('company_id', '=', evaluation.company_id.id)])
         return request.render(
             'staff_contribution_evaluation.portal_evaluation_form', {
                 'evaluation': evaluation,
                 'sections_data': self._build_sections_data(evaluation),
-                'departments': departments,
                 'page_name': 'contribution_evaluation',
             })
 
     @http.route(['/my/contribution-evaluations/<int:evaluation_id>/line/<string:section>/add'],
                 type='http', auth='user', website=True, methods=['POST'], csrf=True)
     def portal_evaluation_line_add(self, evaluation_id, section, **post):
+        """Single-entry add, used only for sections with no tick list
+        (E, G, K, M, O, P, R)."""
         evaluation = self._get_own_evaluation(evaluation_id)
         if evaluation.state != 'draft':
             raise UserError(
                 request.env._("This evaluation can no longer be edited."))
         cfg = SECTION_FORM_CONFIG.get(section)
-        if not cfg:
-            raise UserError(request.env._("Unknown section."))
+        if not cfg or cfg.get('has_types') or cfg.get('has_departments'):
+            raise UserError(request.env._("Unknown or unsupported section."))
 
         vals = {'evaluation_id': evaluation.id, 'section': section}
         for fname, _label, ftype in cfg['fields']:
@@ -326,12 +331,6 @@ class ContributionEvaluationPortal(CustomerPortal):
             raise UserError(
                 request.env._("Please fill in the required field before saving."))
 
-        if cfg.get('has_types'):
-            type_ids = [int(i) for i in request.httprequest.form.getlist('type_ids') if i]
-            vals['contribution_type_ids'] = [(6, 0, type_ids)]
-        if cfg.get('has_departments'):
-            dept_ids = [int(i) for i in request.httprequest.form.getlist('department_ids') if i]
-            vals['department_ids'] = [(6, 0, dept_ids)]
         if cfg.get('has_self_rating'):
             self_rating = post.get('self_rating')
             vals['self_rating'] = int(self_rating) if self_rating else 0
@@ -353,6 +352,72 @@ class ContributionEvaluationPortal(CustomerPortal):
                     'attachment_filename': upload.filename,
                 })
 
+        return request.redirect(
+            '/my/contribution-evaluations/%d#section-%s' % (evaluation.id, section))
+
+    @http.route(['/my/contribution-evaluations/<int:evaluation_id>/section/<string:section>/bulk-add'],
+                type='http', auth='user', website=True, methods=['POST'], csrf=True)
+    def portal_evaluation_bulk_add(self, evaluation_id, section, **post):
+        """Row-table add for tick-list sections (A, B, C, D, F, H, I, J, L,
+        N, Q): one row per contribution type (or department for H), each
+        with its own independent field values. Every ticked row becomes
+        its own separate contribution entry."""
+        evaluation = self._get_own_evaluation(evaluation_id)
+        if evaluation.state != 'draft':
+            raise UserError(
+                request.env._("This evaluation can no longer be edited."))
+        cfg = SECTION_FORM_CONFIG.get(section)
+        if not cfg or not (cfg.get('has_types') or cfg.get('has_departments')):
+            raise UserError(request.env._("Unknown or unsupported section."))
+
+        form = request.httprequest.form
+        if cfg.get('has_departments'):
+            items = request.env['hr.department'].sudo().search(
+                [('company_id', '=', evaluation.company_id.id)])
+            item_field = 'department_id'
+        else:
+            items = request.env['staff.contribution.type'].sudo().search(
+                [('section', '=', section)])
+            item_field = 'contribution_type_id'
+
+        vals_list = []
+        for item in items:
+            if form.get('include_%d' % item.id) != 'on':
+                continue
+            name = form.get('name_%d' % item.id)
+            if not name:
+                raise UserError(
+                    request.env._("Please enter an Activity for every "
+                                  "ticked row."))
+            vals = {
+                'evaluation_id': evaluation.id,
+                'section': section,
+                item_field: item.id,
+                'name': name,
+            }
+            for fname, _label, ftype in cfg['fields']:
+                if fname == 'name':
+                    continue
+                raw = form.get('%s_%d' % (fname, item.id))
+                if ftype == 'integer':
+                    vals[fname] = int(raw) if raw else 0
+                elif ftype == 'monetary':
+                    vals[fname] = float(raw) if raw else 0.0
+                else:
+                    vals[fname] = raw or ''
+            if cfg.get('has_self_rating'):
+                raw = form.get('self_rating_%d' % item.id)
+                vals['self_rating'] = int(raw) if raw else 0
+            if cfg.get('has_evidence'):
+                vals['has_evidence'] = (
+                    form.get('has_evidence_%d' % item.id) == 'on')
+            vals_list.append(vals)
+
+        if not vals_list:
+            raise UserError(
+                request.env._("Tick at least one row before submitting."))
+
+        request.env['staff.contribution.line'].sudo().create(vals_list)
         return request.redirect(
             '/my/contribution-evaluations/%d#section-%s' % (evaluation.id, section))
 

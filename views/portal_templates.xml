@@ -116,10 +116,34 @@
                 </div>
             </div>
 
+            <div class="alert alert-info">
+                <h5 class="alert-heading"><i class="fa fa-info-circle me-1"/>How to fill this form</h5>
+                <ol class="mb-0 ps-3">
+                    <li>Open each section below (click its title to expand).</li>
+                    <li>
+                        For sections with a tick-list (e.g. Revenue Contribution, Cost Reduction): each row is one
+                        contribution type. Tick <strong>Include</strong> for every type that applies this quarter,
+                        fill in that row's own Activity/amount/rating — each ticked row is saved as its own separate
+                        entry, so multiple types stay clearly distinct. Then click <strong>Add Selected</strong>.
+                    </li>
+                    <li>
+                        For sections without a tick-list (e.g. Placement, Innovation, Best Contribution): fill in the
+                        single form shown and click <strong>Add Entry</strong>.
+                    </li>
+                    <li>Repeat for every section that applies to you — you can leave sections empty if nothing applies.</li>
+                    <li>
+                        Evidence: tick "Evidence" on a row now, then open that entry afterward (click its card) to
+                        attach the actual file — bulk rows don't take file uploads directly.
+                    </li>
+                    <li>Add an optional note in <strong>Employee Remarks</strong> at the bottom, then click <strong>Submit for Review</strong> when everything is entered.</li>
+                </ol>
+            </div>
+
             <div class="accordion" id="sectionsAccordion">
                 <t t-foreach="sections_data" t-as="sdata">
                     <t t-set="cfg" t-value="sdata['cfg']"/>
                     <t t-set="sec_code" t-value="sdata['code']"/>
+                    <t t-set="is_row_section" t-value="cfg.get('has_types') or cfg.get('has_departments')"/>
                     <div class="accordion-item" t-attf-id="section-#{sec_code}">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button"
@@ -131,6 +155,9 @@
                         <div t-attf-id="collapse-#{sec_code}" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 <p t-if="cfg.get('intro')" class="text-muted fst-italic" t-esc="cfg['intro']"/>
+                                <p t-if="is_row_section" class="text-muted small">
+                                    Tick each row that applies and fill in its own details — every ticked row becomes its own separate entry.
+                                </p>
 
                                 <div t-if="sdata['cards']" class="row row-cols-1 row-cols-md-2 g-3 mb-4">
                                     <t t-foreach="sdata['cards']" t-as="card">
@@ -138,19 +165,17 @@
                                             <div class="card h-100 shadow-sm">
                                                 <div class="card-body">
                                                     <h6 class="card-title" t-esc="card['title']"/>
+                                                    <div t-if="cfg.get('has_types')" class="small mb-1">
+                                                        <span class="badge text-bg-light border" t-esc="card['line'].contribution_type_id.name"/>
+                                                    </div>
+                                                    <div t-if="cfg.get('has_departments')" class="small mb-1">
+                                                        <span class="badge text-bg-light border" t-esc="card['line'].department_id.name"/>
+                                                    </div>
                                                     <t t-foreach="card['details']" t-as="detail">
                                                         <div class="small text-muted">
                                                             <span t-esc="detail[0]"/>: <span t-esc="detail[1]"/>
                                                         </div>
                                                     </t>
-                                                    <div t-if="cfg.get('has_types')" class="small mt-1">
-                                                        <span t-foreach="card['line'].contribution_type_ids" t-as="ctype"
-                                                              class="badge text-bg-light border me-1" t-esc="ctype.name"/>
-                                                    </div>
-                                                    <div t-if="cfg.get('has_departments')" class="small mt-1">
-                                                        <span t-foreach="card['line'].department_ids" t-as="dept"
-                                                              class="badge text-bg-light border me-1" t-esc="dept.name"/>
-                                                    </div>
                                                     <div t-if="cfg.get('has_self_rating')" class="small text-muted">
                                                         Self-Rating: <span t-esc="card['line'].self_rating"/>/5
                                                     </div>
@@ -171,32 +196,71 @@
                                     </t>
                                 </div>
 
-                                <form t-if="evaluation.state == 'draft'"
+                                <!-- Row-table bulk add: one row per contribution type / department -->
+                                <form t-if="evaluation.state == 'draft' and is_row_section"
+                                      t-attf-action="/my/contribution-evaluations/#{evaluation.id}/section/#{sec_code}/bulk-add"
+                                      method="post" class="border rounded p-3 bg-light">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm align-middle mb-2">
+                                            <thead>
+                                                <tr>
+                                                    <th>Include</th>
+                                                    <th t-esc="'Department' if cfg.get('has_departments') else 'Type'"/>
+                                                    <th>Activity</th>
+                                                    <t t-foreach="cfg['fields']" t-as="fdef">
+                                                        <th t-if="fdef[0] != 'name'" t-esc="fdef[1]"/>
+                                                    </t>
+                                                    <th t-if="cfg.get('has_self_rating')">Self-Rating</th>
+                                                    <th t-if="cfg.get('has_evidence')">Evidence</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="sdata['items']" t-as="item">
+                                                    <td>
+                                                        <input class="form-check-input" type="checkbox" t-attf-name="include_#{item.id}"/>
+                                                    </td>
+                                                    <td t-esc="item.name"/>
+                                                    <td>
+                                                        <input type="text" t-attf-name="name_#{item.id}" class="form-control form-control-sm" style="min-width:140px;"/>
+                                                    </td>
+                                                    <t t-foreach="cfg['fields']" t-as="fdef">
+                                                        <t t-set="fname" t-value="fdef[0]"/>
+                                                        <t t-set="ftype" t-value="fdef[2]"/>
+                                                        <td t-if="fname != 'name'">
+                                                            <textarea t-if="ftype == 'text'" t-attf-name="#{fname}_#{item.id}" class="form-control form-control-sm" rows="1"/>
+                                                            <input t-elif="ftype == 'integer'" type="number" t-attf-name="#{fname}_#{item.id}" class="form-control form-control-sm" style="min-width:90px;" step="1" min="0"/>
+                                                            <input t-elif="ftype == 'monetary'" type="number" t-attf-name="#{fname}_#{item.id}" class="form-control form-control-sm" style="min-width:100px;" step="0.01" min="0"/>
+                                                            <input t-else="" type="text" t-attf-name="#{fname}_#{item.id}" class="form-control form-control-sm"/>
+                                                        </td>
+                                                    </t>
+                                                    <td t-if="cfg.get('has_self_rating')">
+                                                        <select t-attf-name="self_rating_#{item.id}" class="form-select form-select-sm" style="min-width:60px;">
+                                                            <option value="0">0</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                        </select>
+                                                    </td>
+                                                    <td t-if="cfg.get('has_evidence')">
+                                                        <input class="form-check-input" type="checkbox" t-attf-name="has_evidence_#{item.id}"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-plus me-1"/>Add Selected
+                                    </button>
+                                </form>
+
+                                <!-- Single-entry add for sections with no tick-list -->
+                                <form t-if="evaluation.state == 'draft' and not is_row_section"
                                       t-attf-action="/my/contribution-evaluations/#{evaluation.id}/line/#{sec_code}/add"
                                       method="post" enctype="multipart/form-data" class="border rounded p-3 bg-light">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                                    <div t-if="cfg.get('has_types')" class="mb-3">
-                                        <label class="form-label fw-bold">Tick Applicable</label>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <div class="form-check" t-foreach="sdata['types']" t-as="ctype">
-                                                <input class="form-check-input" type="checkbox" name="type_ids"
-                                                       t-att-value="ctype.id" t-attf-id="type-#{sec_code}-#{ctype.id}"/>
-                                                <label class="form-check-label" t-attf-for="type-#{sec_code}-#{ctype.id}" t-esc="ctype.name"/>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div t-if="cfg.get('has_departments')" class="mb-3">
-                                        <label class="form-label fw-bold">Which departments benefited?</label>
-                                        <div class="d-flex flex-wrap gap-3">
-                                            <div class="form-check" t-foreach="departments" t-as="dept">
-                                                <input class="form-check-input" type="checkbox" name="department_ids"
-                                                       t-att-value="dept.id" t-attf-id="dept-#{sec_code}-#{dept.id}"/>
-                                                <label class="form-check-label" t-attf-for="dept-#{sec_code}-#{dept.id}" t-esc="dept.name"/>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <div class="row g-3">
                                         <t t-foreach="cfg['fields']" t-as="fdef">
