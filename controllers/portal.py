@@ -381,6 +381,7 @@ class ContributionEvaluationPortal(CustomerPortal):
             item_field = 'contribution_type_id'
 
         vals_list = []
+        item_ids = []
         for item in items:
             if form.get('include_%d' % item.id) != 'on':
                 continue
@@ -412,12 +413,30 @@ class ContributionEvaluationPortal(CustomerPortal):
                 vals['has_evidence'] = (
                     form.get('has_evidence_%d' % item.id) == 'on')
             vals_list.append(vals)
+            item_ids.append(item.id)
 
         if not vals_list:
             raise UserError(
                 request.env._("Tick at least one row before submitting."))
 
-        request.env['staff.contribution.line'].sudo().create(vals_list)
+        created_lines = request.env['staff.contribution.line'].sudo().create(
+            vals_list)
+
+        if cfg.get('has_evidence'):
+            for line, item_id in zip(created_lines, item_ids):
+                if not line.has_evidence:
+                    continue
+                upload = request.httprequest.files.get(
+                    'evidence_file_%d' % item_id)
+                if upload and upload.filename:
+                    request.env['staff.contribution.evidence'].sudo().create({
+                        'evaluation_id': evaluation.id,
+                        'line_id': line.id,
+                        'name': upload.filename,
+                        'attachment': base64.b64encode(upload.read()),
+                        'attachment_filename': upload.filename,
+                    })
+
         return request.redirect(
             '/my/contribution-evaluations/%d#section-%s' % (evaluation.id, section))
 

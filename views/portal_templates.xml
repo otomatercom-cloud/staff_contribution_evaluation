@@ -132,8 +132,8 @@
                     </li>
                     <li>Repeat for every section that applies to you — you can leave sections empty if nothing applies.</li>
                     <li>
-                        Evidence: tick "Evidence" on a row now, then open that entry afterward (click its card) to
-                        attach the actual file — bulk rows don't take file uploads directly.
+                        Evidence: tick "Evidence" on a row to reveal a file upload right there — attach it before
+                        clicking Add Selected.
                     </li>
                     <li>Add an optional note in <strong>Employee Remarks</strong> at the bottom, then click <strong>Submit for Review</strong> when everything is entered.</li>
                 </ol>
@@ -199,7 +199,7 @@
                                 <!-- Row-table bulk add: one row per contribution type / department -->
                                 <form t-if="evaluation.state == 'draft' and is_row_section"
                                       t-attf-action="/my/contribution-evaluations/#{evaluation.id}/section/#{sec_code}/bulk-add"
-                                      method="post" class="border rounded p-3 bg-light">
+                                      method="post" enctype="multipart/form-data" class="border rounded p-3 bg-light">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <div class="table-responsive">
                                         <table class="table table-sm align-middle mb-2">
@@ -245,7 +245,11 @@
                                                         </select>
                                                     </td>
                                                     <td t-if="cfg.get('has_evidence')">
-                                                        <input class="form-check-input" type="checkbox" t-attf-name="has_evidence_#{item.id}"/>
+                                                        <input class="form-check-input" type="checkbox" t-attf-name="has_evidence_#{item.id}"
+                                                               t-attf-id="evidence-toggle-#{sec_code}-#{item.id}"
+                                                               t-attf-onchange="document.getElementById('evidence-file-#{sec_code}-#{item.id}').classList.toggle('d-none', !this.checked)"/>
+                                                        <input type="file" t-attf-name="evidence_file_#{item.id}" class="form-control form-control-sm mt-1 d-none"
+                                                               t-attf-id="evidence-file-#{sec_code}-#{item.id}" style="min-width:160px;"/>
                                                     </td>
                                                 </tr>
                                             </tbody>
